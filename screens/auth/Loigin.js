@@ -4,14 +4,34 @@ import {
   StyleSheet,
   TouchableOpacity,
   TextInput,
+  Alert,
 } from "react-native";
 import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 
-const Register = () => {
+const Login = ({ navigation }) => {
   const [mobileNumber, setMobileNumber] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  // FUNCTIONS //
+
+  const loginUser = () => {
+    setLoading(true);
+    if (!mobileNumber || !password) {
+      Alert.alert("mobile and password required");
+      setLoading(false);
+    } else {
+      setTimeout(() => {
+        console.log(mobileNumber, password);
+        setLoading(false);
+      }, 4000);
+    }
+  };
+
+  // END OF FUNCTIONS //
+
   return (
     <View style={styles.container}>
       <View style={styles.regBack}>
@@ -41,15 +61,17 @@ const Register = () => {
             />
             <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
               <Ionicons
-                name={showPassword  ? "eye-off" : "eye"}
+                name={showPassword ? "eye-off" : "eye"}
                 size={24}
                 color="gray"
               />
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity style={styles.loginButton}>
-            <Text style={styles.loginButtonText}>LOGIN</Text>
+          <TouchableOpacity style={styles.loginButton} onPress={loginUser}>
+            <Text style={styles.loginButtonText}>
+              {loading ? <>Please wait...</> : <>Login</>}
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity>
@@ -62,7 +84,10 @@ const Register = () => {
             _____________________________________________________
           </Text>
           <Text style={styles.creatacccountfont}>Dont have account? ... </Text>
-          <TouchableOpacity style={styles.createAccountButton}>
+          <TouchableOpacity
+            style={styles.createAccountButton}
+            onPress={() => navigation.navigate("SelectRole")}
+          >
             <Text style={styles.createAccountText}>CREATE ACCOUNT</Text>
           </TouchableOpacity>
         </View>
@@ -79,9 +104,9 @@ const styles = StyleSheet.create({
 
   title: {
     fontSize: 40,
-    fontWeight: "bold",
     marginBottom: 15,
     color: "#000",
+    fontFamily: "outfitbold",
   },
   subtitle: {
     fontSize: 20,
@@ -89,6 +114,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     marginRight: 20,
     fontWeight: "300",
+    fontFamily: "outfit",
   },
   regBack: {
     backgroundColor: "#E4F6FF",
@@ -109,8 +135,8 @@ const styles = StyleSheet.create({
     width: "100%",
     fontStyle: "bold",
     backgroundColor: "#fff",
-    paddingVertical: 10,
-    paddingHorizontal: 15,
+    paddingVertical: 15,
+    paddingHorizontal: 25,
     borderRadius: 50,
     fontSize: 20,
     color: "#333",
@@ -128,8 +154,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#fff",
-    paddingVertical: 10,
-    paddingHorizontal: 15,
+    paddingVertical: 15,
+    paddingHorizontal: 25,
     borderRadius: 25,
     marginBottom: 45,
     width: "100%",
@@ -184,14 +210,22 @@ const styles = StyleSheet.create({
     textDecorationLine: "underline",
   },
   hrline: {
-    textAlign: "center",
-    color: "#323232",
-    sshadowColor: "rgba(0, 0, 0, 1)",
-    shadowOpacity: 0.9,
-    elevation: 10,
-    shadowRadius: 15,
-    shadowOffset: { width: 10, height: 100 },
+    // textAlign: "center",
+    // color: "#323232",
+    // sshadowColor: "rgba(0, 0, 0, 1)",
+    // shadowOpacity: 0.9,
+    // elevation: 10,
+    // shadowRadius: 15,
+    // shadowOffset: { width: 10, height: 100 },
     marginBottom: 30,
+    textAlign: "center",
+    color: "#91EEF6",
+    borderBottomColor: "rgba(0,0,0,0.25)",
+    borderBottomWidth: 4,
+    opacity: 0.2,
+    borderBottomEndRadius: 50,
+    // borderBottomLeftRadius: 50,
+    borderBottomStartRadius: 50,
   },
   createAccountButton: {
     backgroundColor: "#90caf9",
@@ -379,4 +413,4 @@ const styles = StyleSheet.create({
 //   },
 // });
 
-export default Register;
+export default Login;
