@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import React from "react";
 
-const SelectRole = () => {
+const SelectRole = ({ navigation }) => {
   return (
     <View style={styles.main}>
       <Image style={styles.logo} source={require("../assets/logo_dark.png")} />
@@ -24,7 +24,10 @@ const SelectRole = () => {
       </Text>
 
       <View style={styles.bgView}>
-        <TouchableOpacity style={styles.selctionBg}>
+        <TouchableOpacity
+          style={styles.selctionBg}
+          onPress={() => navigation.navigate("Otp")}
+        >
           <Image
             style={styles.icons}
             source={require("../assets/job-seeker.png")}
