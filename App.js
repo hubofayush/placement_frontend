@@ -7,6 +7,10 @@ import { useFonts } from "expo-font";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import OtpVerification from "./screens/auth/OtpVerification";
+import LoadingSplashScreen from "./screens/LoadingSplashScreen"; // Import the LoadingSplashScreen
+import ProfileStep1 from "./screens/ProfileStep1";
+import ProfileStep2 from "./screens/ProfileStep2";
+import ProfileStep3 from "./screens/ProfileStep3";
 
 export default function App() {
   const [fontloaded] = useFonts({
@@ -38,11 +42,38 @@ export default function App() {
           component={SelectRole}
           options={{ headerShown: false }}
         />
+
+        <Stack.Screen
+          name="LoadingSplashScreen"
+          component={LoadingSplashScreen}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen
           name="Otp"
           component={OtpVerification}
           options={{ headerShown: false }}
         />
+
+        
+
+        <Stack.Screen
+           name="ProfileStep1" 
+           component={ProfileStep1} 
+           options={{ headerShown: false }} 
+        />
+
+         <Stack.Screen
+           name="ProfileStep2" 
+           component={ProfileStep2} 
+           options={{ headerShown: false }} 
+        />
+
+        <Stack.Screen
+           name="ProfileStep3" 
+           component={ProfileStep3} 
+           options={{ headerShown: false }} 
+        /> 
+
       </Stack.Navigator>
     </NavigationContainer>
   );
