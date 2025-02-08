@@ -1,57 +1,4 @@
-//basic code  for profilestep1.js start//
-
-// // import React, { useState } from "react";
-// import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
-
-// const ProfileStep1 = ({ navigation, route }) => {
-//   const [name, setName] = useState("");
-//   const [email, setEmail] = useState("");
-
-//   const handleNext = () => {
-//     navigation.navigate("ProfileStep2", { name, email });
-//   };
-
-//   return (
-//     <View style={styles.container}>
-//       <Text style={styles.title}>Step 1: Basic Information</Text>
-//       <TextInput
-//         style={styles.input}
-//         placeholder="Name"
-//         value={name}
-//         onChangeText={setName}
-//       />
-//       <TextInput
-//         style={styles.input}
-//         placeholder="Email"
-//         value={email}
-//         onChangeText={setEmail}
-//       />
-//       <TouchableOpacity style={styles.button} onPress={handleNext}>
-//         <Text style={styles.buttonText}>Next</Text>
-//       </TouchableOpacity>
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: { flex: 1, justifyContent: "center", padding: 20 },
-//   title: { fontSize: 24, marginBottom: 20 },
-//   input: { borderWidth: 1, borderColor: "#ccc", padding: 10, marginBottom: 20 },
-//   button: { backgroundColor: "#1565c0", padding: 15, alignItems: "center" },
-//   buttonText: { color: "#fff", fontSize: 18 },
-// });
-
-// export default ProfileStep1;
-
-
-//basic code  for profilestep1.js end//
-
-
-
-
-//apk disign code -:
-
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -60,9 +7,9 @@ import {
   Image,
   ScrollView,
   Alert,
-  Button, // Importing the built-in Button component
+  TouchableOpacity, // Importing TouchableOpacity for custom button
 } from "react-native";
-import { RadioButton } from "react-native-paper"; // You can use react-native-paper for radio buttons
+import { RadioButton } from "react-native-paper";
 
 export default function ProfileStep1({ navigation }) {
   const [formData, setFormData] = useState({
@@ -73,7 +20,7 @@ export default function ProfileStep1({ navigation }) {
     age: "",
   });
 
-  const [errors, setErrors] = useState({}); // State for form errors
+  const [errors, setErrors] = useState({});
 
   const validateForm = () => {
     const newErrors = {};
@@ -89,23 +36,18 @@ export default function ProfileStep1({ navigation }) {
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
     } else {
-      // Proceed with form submission
       console.log("Form submitted:", formData);
-      // Navigate to the next step or screen
-      navigation.navigate("NextStep"); // Adjust the navigation as needed
+      navigation.navigate("ProfileStep2");
     }
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-       <Text style={styles.subtitle}>Setup your profile</Text>
-
+      <Text style={styles.subtitle}>Setup your profile</Text>
       <View style={styles.header}>
         <Image style={styles.logo} source={require("../assets/profile_icon.png")} />
-       
       </View>
 
-      
       <View style={styles.formContainer}>
         <Text style={styles.label}>First Name</Text>
         <TextInput
@@ -157,11 +99,9 @@ export default function ProfileStep1({ navigation }) {
         {errors.age && <Text style={styles.errorText}>{errors.age}</Text>}
       </View>
 
-      <Button 
-        title="NEXT"
-        onPress={handleSubmit}
-        color="#0d47a1" // Set button color
-      />
+      <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+        <Text style={styles.buttonText}>NEXT</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 }
@@ -174,22 +114,18 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: 5,
   },
   logo: {
     width: 130,
     height: 130,
     resizeMode: "contain",
-    borderRadius:100,
-  },
-  title: {
-    fontSize: 45,
-    fontFamily: "RacingSansOne_Regular",
+    borderRadius: 100,
   },
   subtitle: {
     fontSize: 24,
     textAlign: "center",
-    marginBottom: 20,
+    marginBottom: 5,
   },
   formContainer: {
     backgroundColor: "#E4F6FF",
@@ -219,6 +155,22 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginBottom: 10,
   },
- 
-
+  button: {
+    backgroundColor: "#1565c0",
+    paddingVertical: 7,
+    paddingHorizontal: 60,
+    borderRadius: 25,
+    alignItems: "center",
+    shadowColor: "rgba(0, 0, 0, 1)",
+    shadowOpacity: 2,
+    elevation: 10,
+    shadowRadius: 15,
+    shadowOffset: { width: 1, height: 1 },
+    marginBottom: 10,
+    marginTop: 10,
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 18,
+  },
 });
