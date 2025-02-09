@@ -104,9 +104,9 @@ export default function ProfileStep2({ navigation }) {
         </View>
       </View>
 
-      {/* <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-             <Text style={styles.buttonText}>NEX</Text>
-      </TouchableOpacity> */}
+      <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+             <Text style={styles.buttonText}>NEXT </Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 }

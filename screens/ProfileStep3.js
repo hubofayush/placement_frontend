@@ -239,7 +239,7 @@ export default function ProfileStep3({ navigation }) {
   const handleSubmit = () => {
     console.log("Form submitted:", { pinCode, district, taluka });
     // Navigate to the next step or screen
-    navigation.navigate("LoadingSplashScreen"); // Adjust the navigation as needed
+    navigation.navigate("LoadingSplashScreens"); // Adjust the navigation as needed
   };
 
   const handleBack = () => {
@@ -329,11 +329,10 @@ export default function ProfileStep3({ navigation }) {
         </TouchableOpacity>
       </View>
 
-      <Button
-        title="NEXT"
-        onPress={handleSubmit}
-        color="#0d47a1" // Set button color
-      />
+      <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+                   <Text style={styles.buttonText}>NEXT </Text>
+      </TouchableOpacity>
+      
     </ScrollView>
   );
 }
@@ -443,4 +442,24 @@ const styles = StyleSheet.create({
     color: "#0d47a1",
     fontSize: 16,
   },
+
+  button: {
+    backgroundColor: "#1565c0",
+    paddingVertical: 7,
+    paddingHorizontal: 60,
+    borderRadius: 25,
+    alignItems: "center",
+    shadowColor: "rgba(0, 0, 0, 1)",
+    shadowOpacity: 2,
+    elevation: 10,
+    shadowRadius: 15,
+    shadowOffset: { width: 1, height: 1 },
+    marginBottom: 10,
+    marginTop: 20,
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 19,
+  },
+
 });

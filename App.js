@@ -11,6 +11,14 @@ import LoadingSplashScreen from "./screens/LoadingSplashScreen"; // Import the L
 import ProfileStep1 from "./screens/ProfileStep1";
 import ProfileStep2 from "./screens/ProfileStep2";
 import ProfileStep3 from "./screens/ProfileStep3";
+import LoadingSplashScreens from "./screens/LoadingSplashScreens";
+import PasswordSetup from "./screens/PasswordSetup"; 
+import AccountSuccess from "./screens/AccountSuccess"; 
+import Marketplace  from "./screens/Marketplace"; 
+import HomeScreen from './screens/HomeScreen';
+import NotificationScreen from './screens/NotificationScreen';
+import SearchScreen from './screens/SearchScreen';
+import ProfileScreen from './screens/ProfileScreen';
 
 export default function App() {
   const [fontloaded] = useFonts({
@@ -74,6 +82,51 @@ export default function App() {
            options={{ headerShown: false }} 
         /> 
 
+        <Stack.Screen
+          name="LoadingSplashScreens"
+          component={LoadingSplashScreens}
+          options={{ headerShown: false }}
+        />
+
+        <Stack.Screen
+          name="PasswordSetup"
+          component={PasswordSetup}
+          options={{ headerShown: false }}
+        />
+
+
+        <Stack.Screen
+          name="AccountSuccess"
+          component={AccountSuccess}
+          options={{ headerShown: false }}
+        />
+
+        <Stack.Screen
+          name="Marketplace"
+          component={Marketplace}
+          options={{ headerShown: false }}
+        />
+
+        <Stack.Screen
+          name="HomeScreen"
+          component={HomeScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="NotificationScreen"
+          component={NotificationScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="SearchScreen"
+          component={SearchScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="ProfileScreen"
+          component={ProfileScreen}
+          options={{ headerShown: false }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

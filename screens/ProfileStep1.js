@@ -72,13 +72,13 @@ export default function ProfileStep1({ navigation }) {
             status={formData.gender === "male" ? "checked" : "unchecked"}
             onPress={() => setFormData({ ...formData, gender: "male" })}
           />
-          <Text>Male</Text>
+          <Text>Male </Text>
           <RadioButton
             value="female"
             status={formData.gender === "female" ? "checked" : "unchecked"}
             onPress={() => setFormData({ ...formData, gender: "female" })}
           />
-          <Text>Female</Text>
+          <Text>Female </Text>
         </View>
 
         <Text style={styles.label}>Date of Birth</Text>

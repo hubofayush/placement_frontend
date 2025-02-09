@@ -83,7 +83,7 @@ const Login = ({ navigation }) => {
           <Text numberOfLines={1} style={styles.hrline}>
             _____________________________________________________
           </Text>
-          <Text style={styles.creatacccountfont}>Dont have account? ... </Text>
+          <Text style={styles.creatacccountfont}>Don't have account? ...  </Text>
           <TouchableOpacity
             style={styles.createAccountButton}
             onPress={() => navigation.navigate("SelectRole")}
