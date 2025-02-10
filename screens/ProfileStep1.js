@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import {  Button, Platform } from "react-native";
+import DateTimePicker from "@react-native-community/datetimepicker";
+
 import {
   View,
   Text,
@@ -26,8 +29,7 @@ export default function ProfileStep1({ navigation }) {
     const newErrors = {};
     if (!formData.firstName) newErrors.firstName = "First name is required.";
     if (!formData.lastName) newErrors.lastName = "Last name is required.";
-    if (!formData.age) newErrors.age = "Age is required.";
-    if (formData.age && isNaN(formData.age)) newErrors.age = "Age must be a number.";
+    
     return newErrors;
   };
 
@@ -41,11 +43,44 @@ export default function ProfileStep1({ navigation }) {
     }
   };
 
+  //  date picker //
+  const [date, setDate] = useState(new Date());
+  const [show, setShow] = useState(false);
+  const [age, setAge] = useState(null)
+  const onChangeDate = (event, selectedDate) => {
+    setShow(false); // Hide the picker after selection
+    if (selectedDate) {
+      setDate(selectedDate);
+      console.log(date)
+      calculateAge(selectedDate);
+    }
+  };
+
+
+  const calculateAge = (dob) => {
+    const today = new Date();
+    let age = today.getFullYear() - dob.getFullYear();
+    const monthDiff = today.getMonth() - dob.getMonth();
+    const dayDiff = today.getDate() - dob.getDate();
+
+    // Adjust if birthday hasn't occurred this year
+    if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+      age--;
+    }
+    
+    setAge(age);
+    console.log(age)
+  };
+
+  //  end of  date picker //
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.subtitle}>Setup your profile</Text>
       <View style={styles.header}>
-        <Image style={styles.logo} source={require("../assets/profile_icon.png")} />
+        <Image
+          style={styles.logo}
+          source={require("../assets/profile_icon.png")}
+        />
       </View>
 
       <View style={styles.formContainer}>
@@ -55,7 +90,9 @@ export default function ProfileStep1({ navigation }) {
           value={formData.firstName}
           onChangeText={(text) => setFormData({ ...formData, firstName: text })}
         />
-        {errors.firstName && <Text style={styles.errorText}>{errors.firstName}</Text>}
+        {errors.firstName && (
+          <Text style={styles.errorText}>{errors.firstName}</Text>
+        )}
 
         <Text style={styles.label}>Last Name</Text>
         <TextInput
@@ -63,7 +100,9 @@ export default function ProfileStep1({ navigation }) {
           value={formData.lastName}
           onChangeText={(text) => setFormData({ ...formData, lastName: text })}
         />
-        {errors.lastName && <Text style={styles.errorText}>{errors.lastName}</Text>}
+        {errors.lastName && (
+          <Text style={styles.errorText}>{errors.lastName}</Text>
+        )}
 
         <Text style={styles.label}>Gender</Text>
         <View style={styles.radioGroup}>
@@ -81,21 +120,38 @@ export default function ProfileStep1({ navigation }) {
           <Text>Female </Text>
         </View>
 
-        <Text style={styles.label}>Date of Birth</Text>
+        {/* <Text style={styles.label}>Date of Birth</Text>
         <TextInput
           style={styles.input}
           placeholder="DD/MM/YYYY"
           value={formData.dateOfBirth}
+          type="date"
           onChangeText={(text) => setFormData({ ...formData, dateOfBirth: text })}
-        />
+        /> */}
+{/* new date picker code  */}
+        
+          <Button title="Pick Date of Birth" onPress={() => setShow(true)} />
+          <Text style={styles.selectedDate}>Selected Date: {date.toDateString()}</Text>
 
-        <Text style={styles.label}>Age</Text>
+          {show && (
+            <DateTimePicker
+              value={date}
+              mode="date"
+              maximumDate={new Date()}
+              display={Platform.OS === "ios" ? "inline" : "default"}
+              onChange={onChangeDate}
+            />
+          )}
+
+{age !== null && <Text style={styles.ageText}>Your Age: {age} years</Text>}
+{/* end of new date picker code  */}
+
+        {/* <Text style={styles.label}>Age</Text>
         <TextInput
           style={styles.input}
           keyboardType="numeric"
-          value={formData.age}
-          onChangeText={(text) => setFormData({ ...formData, age: text })}
-        />
+          value={age}
+        /> */}
         {errors.age && <Text style={styles.errorText}>{errors.age}</Text>}
       </View>
 
@@ -172,5 +228,14 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#fff",
     fontSize: 18,
+  },ageText: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginTop: 20,
+    color: "blue",
+  },
+  selectedDate: {
+    fontSize: 16,
+    marginTop: 10,
   },
 });

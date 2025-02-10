@@ -8,7 +8,7 @@ import {
   Image,
   ScrollView,
 } from "react-native";
-import { ChevronRight } from "react-native-vector-icons/Feather"; // Ensure you have this icon package installed
+import Icon from "react-native-vector-icons/Feather"; // Import the entire icon set
 
 const Marketplace = ({ navigation }) => {
   const [activeSegment, setActiveSegment] = useState("Jobs");
@@ -53,64 +53,77 @@ const Marketplace = ({ navigation }) => {
 
       {/* Job Listings */}
       <ScrollView style={styles.jobList}>
-        <JobCard
-          logo={require("../assets/placeholder.png")}
-          logoBackground="#26a689"
-          title="Welder"
-          company="Finolex AMT"
-          location="Ratnagiri"
+        <TouchableOpacity
+          style={styles.jobCard}
           onPress={() => navigation.navigate("JobDetails")}
-        />
-        <JobCard
-          logo={require("../assets/placeholder.png")}
-          logoBackground="#f9d5f2"
-          title="Mechanic"
-          company="PIS Pvt Ltd"
-          location="Ratnagiri"
+        >
+          <View style={[styles.logoContainer, { backgroundColor: "#26a689" }]}>
+            <Image
+              source={require("../assets/placeholder.png")}
+              style={styles.logo}
+            />
+          </View>
+          <View style={styles.jobInfo}>
+            <Text style={styles.jobTitle}>Welder</Text>
+            <Text style={styles.companyName}>Finolex AMT</Text>
+            <Text style={styles.location}>Ratnagiri</Text>
+          </View>
+          <Icon name="chevron-right" style={styles.chevronIcon} />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.jobCard}
           onPress={() => navigation.navigate("JobDetails")}
-        />
-        <JobCard
-          logo={require("../assets/placeholder.png")}
-          logoBackground="#26a689"
-          title="Electrician"
-          company="Finolex AMT"
-          location="Ratnagiri"
+        >
+          <View style={[styles.logoContainer, { backgroundColor: "#f9d5f2" }]}>
+            <Image
+              source={require("../assets/placeholder.png")}
+              style={styles.logo}
+            />
+          </View>
+          <View style={styles.jobInfo}>
+            <Text style={styles.jobTitle}>Mechanic</Text>
+            <Text style={styles.companyName}>PIS Pvt Ltd</Text>
+            <Text style={styles.location}>Ratnagiri</Text>
+          </View>
+          <Icon name="chevron-right" style={styles.chevronIcon} />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.jobCard}
           onPress={() => navigation.navigate("JobDetails")}
-        />
+        >
+          <View style={[styles.logoContainer, { backgroundColor: "#26a689" }]}>
+            <Image
+              source={require("../assets/placeholder.png")}
+              style={styles.logo}
+            />
+          </View>
+          <View style={styles.jobInfo}>
+            <Text style={styles.jobTitle}>Electrician</Text>
+            <Text style={styles.companyName}>Finolex AMT</Text>
+            <Text style={styles.location}>Ratnagiri</Text>
+          </View>
+          <Icon name="chevron-right" style={styles.chevronIcon} />
+        </TouchableOpacity>
       </ScrollView>
 
       {/* Bottom Navigation */}
       <View style={styles.bottomNav}>
-        <NavItem label="Home" active onPress={() => navigation.navigate("Home")} />
-        <NavItem label="Notification" onPress={() => navigation.navigate("Notification")} />
-        <NavItem label="Search" onPress={() => navigation.navigate("Search")} />
-        <NavItem label="Profile" onPress={() => navigation.navigate("Profile")} />
+        <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate("Home")}>
+          <Text style={styles.navText}>Home</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate("Notification")}>
+          <Text style={styles.navText}>Notification</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate("Search")}>
+          <Text style={styles.navText}>Search</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate("Profile")}>
+          <Text style={styles.navText}>Profile</Text>
+        </TouchableOpacity>
       </View>
     </View>
-  );
-};
-
-const JobCard = ({ logo, logoBackground, title, company, location, onPress }) => {
-  return (
-    <TouchableOpacity style={styles.jobCard} onPress={onPress}>
-      <View style={[styles.logoContainer, { backgroundColor: logoBackground }]}>
-        <Image source={logo} style={styles.logo} />
-      </View>
-      <View style={styles.jobInfo}>
-        <Text style={styles.jobTitle}>{title}</Text>
-        <Text style={styles.companyName}>{company}</Text>
-        <Text style={styles.location}>{location}</Text>
-      </View>
-      <ChevronRight style={styles.chevronIcon} />
-    </TouchableOpacity>
-  );
-};
-
-const NavItem = ({ label, active, onPress }) => {
-  return (
-    <TouchableOpacity style={styles.navItem} onPress={onPress}>
-      <Text style={[styles.navText, active && styles.activeNavText]}>{label}</Text>
-    </TouchableOpacity>
   );
 };
 
@@ -217,9 +230,6 @@ const styles = StyleSheet.create({
   },
   navText: {
     color: "#595959",
-  },
-  activeNavText: {
-    color: "#0d47a1",
   },
 });
 
