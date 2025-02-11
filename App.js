@@ -19,7 +19,7 @@ import HomeScreen from './screens/HomeScreen';
 import NotificationScreen from './screens/NotificationScreen';
 import SearchScreen from './screens/SearchScreen';
 import ProfileScreen from './screens/ProfileScreen';
-
+import Filter from './screens/Filter';
 export default function App() {
   const [fontloaded] = useFonts({
     RacingSansOne_Regular: require("./assets/fonts/RacingSansOne-Regular.ttf"),
@@ -125,6 +125,11 @@ export default function App() {
         <Stack.Screen
           name="ProfileScreen"
           component={ProfileScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Filter"
+          component={Filter}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>
