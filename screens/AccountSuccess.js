@@ -29,7 +29,7 @@ const AccountSuccess = ({ navigation }) => {
     }
 
     console.log("Account created with email:", formData.email);
-    navigation.navigate("ProfileStep1");
+    navigation.navigate("Marketplace");
   };
 
   return (

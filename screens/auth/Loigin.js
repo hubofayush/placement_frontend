@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
+import axios from 'axios';
 
 const Login = ({ navigation }) => {
   const [mobileNumber, setMobileNumber] = useState("");
@@ -16,17 +17,42 @@ const Login = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
 
   // FUNCTIONS //
+  // Fetching data from server //
+  const fetchdata = async () => {
+    try {
+      const response = await axios.post('http://192.168.43.189:4000/api/v1/emp/login', {
+        
+          phone: mobileNumber,
+          password: password,
+        
+      },{
+        withCredentials:true
+      });
+      console.log(response.data.data);
+      // Handle successful response here (e.g., navigate to another screen)
+      if (response.data.sucess) {
+        // Assuming the response has a success property
+        Alert.alert("Login Successful", "Welcome back!");
+        navigation.navigate("Marketplace"); // Replace with your next screen
+      } else {
+        Alert.alert("Login Failed", response.data.message || "Invalid credentials");
+      }
+    } catch (error) {
+      console.error("Error", error);
+      Alert.alert("Error", "An error occurred while logging in. Please try again.");
+    } finally {
+      setLoading(false); // Reset loading state
+    }
+  };
+  // End of fetching data from server // 
 
-  const loginUser = () => {
+  const loginUser = async () => {
     setLoading(true);
     if (!mobileNumber || !password) {
-      Alert.alert("mobile and password required");
+      Alert.alert("Error", "Mobile number and password are required");
       setLoading(false);
     } else {
-      setTimeout(() => {
-        console.log(mobileNumber, password);
-        setLoading(false);
-      }, 4000);
+      await fetchdata();
     }
   };
 
@@ -43,7 +69,7 @@ const Login = ({ navigation }) => {
 
           <TextInput
             style={styles.input}
-            placeholder="mobile number"
+            placeholder="Mobile number"
             placeholderTextColor="#888"
             keyboardType="phone-pad"
             value={mobileNumber}
@@ -68,9 +94,9 @@ const Login = ({ navigation }) => {
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity style={styles.loginButton} onPress={loginUser}>
+          <TouchableOpacity style={styles.loginButton} onPress={loginUser} disabled={loading}>
             <Text style={styles.loginButtonText}>
-              {loading ? <>Please wait...</> : <>Login</>}
+              {loading ? "Please wait..." : "Login"}
             </Text>
           </TouchableOpacity>
 
@@ -83,7 +109,7 @@ const Login = ({ navigation }) => {
           <Text numberOfLines={1} style={styles.hrline}>
             _____________________________________________________
           </Text>
-          <Text style={styles.creatacccountfont}>Don't have account? ...  </Text>
+          <Text style={styles.creatacccountfont}>Don't have an account? ...  </Text>
           <TouchableOpacity
             style={styles.createAccountButton}
             onPress={() => navigation.navigate("SelectRole")}
@@ -95,13 +121,13 @@ const Login = ({ navigation }) => {
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
   },
-
   title: {
     fontSize: 40,
     marginBottom: 15,
@@ -123,13 +149,11 @@ const styles = StyleSheet.create({
     width: 380,
     borderRadius: 25,
     padding: 30,
-    sshadowColor: "rgba(0, 0, 0, 1)",
+    shadowColor: "rgba(0, 0, 0, 1)",
     shadowOpacity: 2,
     elevation: 10,
     shadowRadius: 15,
     shadowOffset: { width: 1, height: 1 },
-
-    // justifyContent: "center",
   },
   input: {
     width: "100%",
@@ -144,7 +168,7 @@ const styles = StyleSheet.create({
     marginTop: 30,
     borderWidth: 1,
     borderColor: "#A7FFEB",
-    sshadowColor: "rgba(0, 0, 0, 1)",
+    shadowColor: "rgba(0, 0, 0, 1)",
     shadowOpacity: 2,
     elevation: 10,
     shadowRadius: 15,
@@ -161,7 +185,7 @@ const styles = StyleSheet.create({
     width: "100%",
     borderWidth: 1,
     borderColor: "#A7FFEB",
-    sshadowColor: "rgba(0, 0, 0, 1)",
+    shadowColor: "rgba(0, 0, 0, 1)",
     shadowOpacity: 2,
     elevation: 10,
     shadowRadius: 15,
@@ -185,7 +209,7 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
     marginBottom: 20,
-    sshadowColor: "rgba(0, 0, 0, 1)",
+    shadowColor: "rgba(0, 0, 0, 1)",
     shadowOpacity: 2,
     elevation: 10,
     shadowRadius: 15,
@@ -210,13 +234,6 @@ const styles = StyleSheet.create({
     textDecorationLine: "underline",
   },
   hrline: {
-    // textAlign: "center",
-    // color: "#323232",
-    // sshadowColor: "rgba(0, 0, 0, 1)",
-    // shadowOpacity: 0.9,
-    // elevation: 10,
-    // shadowRadius: 15,
-    // shadowOffset: { width: 10, height: 100 },
     marginBottom: 30,
     textAlign: "center",
     color: "#91EEF6",
@@ -224,7 +241,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 4,
     opacity: 0.2,
     borderBottomEndRadius: 50,
-    // borderBottomLeftRadius: 50,
     borderBottomStartRadius: 50,
   },
   createAccountButton: {
@@ -234,7 +250,7 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     width: "100%",
     alignItems: "center",
-    sshadowColor: "rgba(0, 0, 0, 1)",
+    shadowColor: "rgba(0, 0, 0, 1)",
     shadowOpacity: 2,
     elevation: 10,
     shadowRadius: 15,
@@ -252,165 +268,5 @@ const styles = StyleSheet.create({
     margin: "auto",
   },
 });
-// export default Register;
-// import React, { useState } from "react";
-// import {
-//   View,
-//   Text,
-//   TextInput,
-//   TouchableOpacity,
-//   StyleSheet,
-// } from "react-native";
-
-// const Register = () => {
-//   const [mobileNumber, setMobileNumber] = useState("");
-//   const [password, setPassword] = useState("");
-//   const [showPassword, setShowPassword] = useState(false);
-
-//   return (
-//     <View style={styles.container}>
-//       <Text style={styles.title}>Sign In</Text>
-//       <Text style={styles.subtitle}>
-//         Please sign in to your registered account
-//       </Text>
-
-//       {/* Mobile Number Input */}
-//       <TextInput
-//         style={styles.input}
-//         placeholder="mobile number"
-//         placeholderTextColor="#888"
-//         keyboardType="phone-pad"
-//         value={mobileNumber}
-//         onChangeText={setMobileNumber}
-//       />
-
-//       {/* Password Input */}
-//       <View style={styles.passwordContainer}>
-//         <TextInput
-//           style={styles.passwordInput}
-//           placeholder="Password"
-//           placeholderTextColor="#888"
-//           secureTextEntry={!showPassword}
-//           value={password}
-//           onChangeText={setPassword}
-//         />
-//         <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-//           <Text style={styles.eyeIcon}>{showPassword ? "🙈" : "👁️"}</Text>
-//         </TouchableOpacity>
-//       </View>
-
-//       {/* Login Button */}
-//       <TouchableOpacity style={styles.loginButton}>
-//         <Text style={styles.loginButtonText}>LOGIN</Text>
-//       </TouchableOpacity>
-
-//       {/* Forgot Password */}
-//       <TouchableOpacity>
-//         <Text style={styles.forgotText}>
-//           Forgot your password? <Text style={styles.resetLink}>Reset here</Text>
-//         </Text>
-//       </TouchableOpacity>
-
-//       {/* Create Account Button */}
-//       <TouchableOpacity style={styles.createAccountButton}>
-//         <Text style={styles.createAccountText}>CREATE ACCOUNT</Text>
-//       </TouchableOpacity>
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     justifyContent: "center",
-//     alignItems: "center",
-//     backgroundColor: "#E4F6FF",
-//     padding: 20,
-//     height: 200,
-//     width: 350,
-//     borderRadius: 25,
-//   },
-//   title: {
-//     fontSize: 24,
-//     fontWeight: "bold",
-//     marginBottom: 10,
-//     color: "#333",
-//   },
-//   subtitle: {
-//     fontSize: 14,
-//     color: "#555",
-//     marginBottom: 20,
-//   },
-//   input: {
-//     width: "100%",
-//     backgroundColor: "#fff",
-//     paddingVertical: 10,
-//     paddingHorizontal: 15,
-//     borderRadius: 25,
-//     fontSize: 16,
-//     color: "#333",
-//     marginBottom: 15,
-//     borderWidth: 1,
-//     borderColor: "#ddd",
-//   },
-//   passwordContainer: {
-//     flexDirection: "row",
-//     alignItems: "center",
-//     backgroundColor: "#fff",
-//     paddingVertical: 10,
-//     paddingHorizontal: 15,
-//     borderRadius: 25,
-//     marginBottom: 15,
-//     width: "100%",
-//     borderWidth: 1,
-//     borderColor: "#ddd",
-//   },
-//   passwordInput: {
-//     flex: 1,
-//     fontSize: 16,
-//     color: "#333",
-//   },
-//   eyeIcon: {
-//     fontSize: 20,
-//     marginLeft: 10,
-//     color: "#888",
-//   },
-//   loginButton: {
-//     backgroundColor: "#1565c0",
-//     paddingVertical: 15,
-//     paddingHorizontal: 50,
-//     borderRadius: 25,
-//     width: "100%",
-//     alignItems: "center",
-//     marginBottom: 20,
-//   },
-//   loginButtonText: {
-//     color: "#fff",
-//     fontSize: 18,
-//     fontWeight: "bold",
-//   },
-//   forgotText: {
-//     fontSize: 14,
-//     color: "#555",
-//     marginBottom: 30,
-//   },
-//   resetLink: {
-//     color: "#1565c0",
-//     fontWeight: "bold",
-//   },
-//   createAccountButton: {
-//     backgroundColor: "#90caf9",
-//     paddingVertical: 15,
-//     paddingHorizontal: 50,
-//     borderRadius: 25,
-//     width: "100%",
-//     alignItems: "center",
-//   },
-//   createAccountText: {
-//     color: "#1565c0",
-//     fontSize: 18,
-//     fontWeight: "bold",
-//   },
-// });
 
 export default Login;
