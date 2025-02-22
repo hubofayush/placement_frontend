@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import {
   View,
@@ -29,7 +28,10 @@ const Marketplace = ({ navigation }) => {
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.segmentButton, activeSegment === "Companies" && styles.activeSegment]}
-            onPress={() => setActiveSegment("Companies")}
+            onPress={() => {
+              setActiveSegment("Companies");
+              navigation.navigate("CompanyDetails"); // Navigate to CompanyDetails
+            }}
           >
             <Text style={styles.segmentText}>Companies</Text>
           </TouchableOpacity>
@@ -46,7 +48,7 @@ const Marketplace = ({ navigation }) => {
       <ScrollView style={styles.jobList}>
         <TouchableOpacity
           style={styles.jobCard}
-          onPress={() => navigation.navigate("JobDetails")}
+          onPress={() => navigation.navigate("JobDetails")} // Navigate to JobDetails
         >
           <View style={[styles.logoContainer, { backgroundColor: "#26a689" }]}>
             <Image
@@ -64,7 +66,7 @@ const Marketplace = ({ navigation }) => {
 
         <TouchableOpacity
           style={styles.jobCard}
-          onPress={() => navigation.navigate("JobDetails")}
+          onPress={() => navigation.navigate("JobDetails")} // Navigate to JobDetails
         >
           <View style={[styles.logoContainer, { backgroundColor: "#f9d5f2" }]}>
             <Image
@@ -82,7 +84,7 @@ const Marketplace = ({ navigation }) => {
 
         <TouchableOpacity
           style={styles.jobCard}
-          onPress={() => navigation.navigate("JobDetails")}
+          onPress={() => navigation.navigate("JobDetails")} // Navigate to JobDetails
         >
           <View style={[styles.logoContainer, { backgroundColor: "#26a689" }]}>
             <Image
@@ -116,7 +118,7 @@ const Marketplace = ({ navigation }) => {
           style={styles.navItem}
           onPress={() => {
             setActiveNavItem("Notification");
-            navigation.navigate("Notification");
+            navigation.navigate("NotificationScreen");
           }}
         >
           <Ionicons name="notifications" size={24} color={activeNavItem === "Notification" ? "#0d47a1" : "#595959"} />
@@ -127,7 +129,7 @@ const Marketplace = ({ navigation }) => {
           style={styles.navItem}
           onPress={() => {
             setActiveNavItem("Search");
-            navigation.navigate("Search");
+            navigation.navigate("SearchScreen");
           }}
         >
           <Ionicons name="search" size={24} color={activeNavItem === "Search" ? "#0d47a1" : "#595959"} />
@@ -138,7 +140,7 @@ const Marketplace = ({ navigation }) => {
           style={styles.navItem}
           onPress={() => {
             setActiveNavItem("Profile");
-            navigation.navigate("Profile");
+            navigation.navigate("ProfileScreen");
           }}
         >
           <Ionicons name="person" size={24} color={activeNavItem === "Profile" ? "#0d47a1" : "#595959"} />

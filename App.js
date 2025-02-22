@@ -20,6 +20,19 @@ import NotificationScreen from './screens/NotificationScreen';
 import SearchScreen from './screens/SearchScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import Filter from './screens/Filter';
+import VerticalNav from './screens/VerticalNav';
+import Frame from "./screens/Frame";
+import UpdateScreen from "./screens/modalContainer/UpdateScreen"
+import SettingsScreen from "./screens/modalContainer/SettingsScreen"; 
+import LogoutScreen from "./screens/modalContainer/LogoutScreen";
+import AppliedJobs from "./screens/AppliedJobs";
+import AppliedDetailsJobs from "./screens/AppliedDetailsJobs";
+import JobDetails from "./screens/JobDetails";
+import CompanyDetails from "./screens/CompanyDetails";
+import ApplyOver from "./screens/ApplyOver";
+import ApplyWithProfileFrame from "./screens/ApplyWithProfileFrame";
+import ApplyWithResumeFrame from "./screens/ApplyWithResumeFrame";
+
 export default function App() {
   const [fontloaded] = useFonts({
     RacingSansOne_Regular: require("./assets/fonts/RacingSansOne-Regular.ttf"),
@@ -132,6 +145,77 @@ export default function App() {
           component={Filter}
           options={{ headerShown: false }}
         />
+         <Stack.Screen
+          name="VerticalNav"
+          component={VerticalNav}
+          options={{ headerShown: false }}
+        />
+        
+        <Stack.Screen
+          name="Frame"
+          component={Frame}
+          options={{ headerShown: false }}
+        />
+
+        <Stack.Screen
+          name="UpdateScreen"
+          component={UpdateScreen}
+          options={{ headerShown: false }}
+        />
+
+        <Stack.Screen
+          name="SettingsScreen"
+          component={SettingsScreen}
+          options={{ headerShown: false }}
+        />
+
+        <Stack.Screen
+          name="LogoutScreen"
+          component={LogoutScreen}
+          options={{ headerShown: false }}
+        />
+
+        <Stack.Screen
+          name="AppliedJobs"
+          component={AppliedJobs}
+          options={{ headerShown: false }}
+        />
+
+        <Stack.Screen
+          name="AppliedDetailsJobs"
+          component={AppliedDetailsJobs}
+          options={{ headerShown: false }}
+        />
+
+        <Stack.Screen
+          name="JobDetails"
+          component={JobDetails}
+          options={{ headerShown: false }}
+        />
+         <Stack.Screen
+          name="CompanyDetails"
+          component={CompanyDetails}
+          options={{ headerShown: false }}
+        />
+
+        <Stack.Screen
+          name="ApplyOver"
+          component={ApplyOver}
+          options={{ headerShown: false }}
+        />
+
+        <Stack.Screen
+          name="ApplyWithProfileFrame"
+          component={ApplyWithProfileFrame}
+          options={{ headerShown: false }}
+        />
+
+        <Stack.Screen
+          name="ApplyWithResumeFrame"
+          component={ApplyWithResumeFrame}
+          options={{ headerShown: false }}
+        />
+
       </Stack.Navigator>
     </NavigationContainer>
   );
