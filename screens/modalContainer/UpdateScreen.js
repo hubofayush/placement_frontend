@@ -5,7 +5,7 @@ const UpdateScreen = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Update Page</Text>
-      <Text>This is the Update page.</Text>
+      <Text>This is Update page   .</Text>
     </View>
   );
 };

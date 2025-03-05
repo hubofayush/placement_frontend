@@ -106,8 +106,8 @@ const Marketplace = ({ navigation }) => {
         <TouchableOpacity
           style={styles.navItem}
           onPress={() => {
-            setActiveNavItem("Home");
-            navigation.navigate("Home");
+            setActiveNavItem("Marketplace");
+            navigation.navigate("Marketplace");
           }}
         >
           <Ionicons name="home" size={24} color={activeNavItem === "Home" ? "#0d47a1" : "#595959"} />

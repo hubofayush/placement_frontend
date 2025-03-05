@@ -4,7 +4,6 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  Image,
 } from "react-native";
 import { Ionicons } from '@expo/vector-icons'; // Import Ionicons
 
@@ -13,7 +12,7 @@ const NotificationScreen = ({ navigation }) => {
     {
       id: 1,
       title: "Apply Success",
-      content: "You have applied for a job at Finolex AMT as an Electrician.",
+      content: "You have applied for a job at Finolex FAMT as an Electrician.",
       timestamp: "10h ago",
       isRead: false,
     },
@@ -32,6 +31,8 @@ const NotificationScreen = ({ navigation }) => {
       isRead: false,
     },
   ]);
+
+  const [activeNavItem, setActiveNavItem] = useState("Notification");
 
   const markAsRead = (id) => {
     setNotifications((prevNotifications) =>
@@ -55,10 +56,7 @@ const NotificationScreen = ({ navigation }) => {
         {notifications.map((notification) => (
           <View
             key={notification.id}
-            style={[
-              styles.card,
-              notification.isRead ? styles.lightCard : styles.purpleCard,
-            ]}
+            style={[styles.card, notification.isRead ? styles.greyCard : styles.purpleCard]}
           >
             <View style={styles.cardHeader}>
               <View style={styles.cardIndicator} />
@@ -71,7 +69,7 @@ const NotificationScreen = ({ navigation }) => {
               <Text style={styles.cardTimestamp}>{notification.timestamp}</Text>
               {!notification.isRead && (
                 <TouchableOpacity onPress={() => markAsRead(notification.id)}>
-                  <Text style={styles.cardAction}>Mark as read</Text>
+                  <Text style={styles.cardAction}>Mark as read  </Text>
                 </TouchableOpacity>
               )}
             </View>
@@ -81,21 +79,49 @@ const NotificationScreen = ({ navigation }) => {
 
       {/* Bottom Navigation */}
       <View style={styles.bottomNav}>
-        <TouchableOpacity onPress={() => navigation.navigate("Home")} style={styles.navItem}>
-          <Ionicons name="home" size={24} color="#787878" />
+        <TouchableOpacity
+          onPress={() => {
+            setActiveNavItem("Home");
+            navigation.navigate("Marketplace");
+          }}
+          style={styles.navItem}
+        >
+          <Ionicons name="home" size={24} color={activeNavItem === "Home" ? "#0d47a1" : "#787878"} />
           <Text style={styles.navText}>Home</Text>
+          {activeNavItem === "Home" && <View style={styles.activeLine} />}
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate("NotificationScreen")} style={styles.navItem}>
-          <Ionicons name="notifications" size={24} color="#0d47a1" />
+        <TouchableOpacity
+          onPress={() => {
+            setActiveNavItem("Notification");
+            navigation.navigate("NotificationScreen");
+          }}
+          style={styles.navItem}
+        >
+          <Ionicons name="notifications" size={24} color={activeNavItem === "Notification" ? "#0d47a1" : "#787878"} />
           <Text style={styles.navText}>Notification</Text>
+          {activeNavItem === "Notification" && <View style={styles.activeLine} />}
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate("Search")} style={styles.navItem}>
-          <Ionicons name="search" size={24} color="#787878" />
-          <Text style={styles.navText}>Search</Text>
+        <TouchableOpacity
+          onPress={() => {
+            setActiveNavItem("SearchScreen");
+            navigation.navigate("SearchScreen");
+          }}
+          style={styles.navItem}
+        >
+          <Ionicons name="search" size={24} color={activeNavItem === "Search" ? "#0d47a1" : "#787878"} />
+          <Text style={styles.navText}>Search </Text>
+          {activeNavItem === "Search" && <View style={styles.activeLine} />}
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate("Profile")} style={styles.navItem}>
-          <Ionicons name="person" size={24} color="#787878" />
-          <Text style={styles.navText}>Profile</Text>
+        <TouchableOpacity
+          onPress={() => {
+            setActiveNavItem("ProfileScreen");
+            navigation.navigate("ProfileScreen");
+          }}
+          style={styles.navItem}
+        >
+          <Ionicons name="person" size={24} color={activeNavItem === "Profile" ? "#0d47a1" : "#787878"} />
+          <Text style={styles.navText}>Profile </Text>
+          {activeNavItem === "Profile" && <View style={styles.activeLine} />}
         </TouchableOpacity>
       </View>
     </View>
@@ -127,15 +153,12 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     color: "#fff",
   },
-  lightCard: {
-    backgroundColor: " #90EE90",
+  greyCard: {
+    backgroundColor: "#d3d3d3", // Grey color for read notifications
     borderRadius: 15,
     padding: 20,
     marginBottom: 20,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 3,
+    color: "#000",
   },
   cardHeader: {
     flexDirection: "row",
@@ -182,6 +205,12 @@ const styles = StyleSheet.create({
   },
   navText: {
     color: "#787878",
+  },
+  activeLine: {
+    width: "100%",
+    height: 4,
+    backgroundColor: "#1565c0",
+    marginTop: 5,
   },
 });
 

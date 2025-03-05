@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import {  Button, Platform } from "react-native";
+import { Button, Platform } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
-
 import {
   View,
   Text,
@@ -10,9 +9,11 @@ import {
   Image,
   ScrollView,
   Alert,
-  TouchableOpacity, // Importing TouchableOpacity for custom button
+  TouchableOpacity,
 } from "react-native";
 import { RadioButton } from "react-native-paper";
+import * as ImagePicker from 'expo-image-picker'; // Import the image picker from expo
+import { Ionicons } from "@expo/vector-icons"; // Import the back arrow icon
 
 export default function ProfileStep1({ navigation }) {
   const [formData, setFormData] = useState({
@@ -24,12 +25,12 @@ export default function ProfileStep1({ navigation }) {
   });
 
   const [errors, setErrors] = useState({});
+  const [profileImage, setProfileImage] = useState(null); // State for profile image
 
   const validateForm = () => {
     const newErrors = {};
     if (!formData.firstName) newErrors.firstName = "First name is required.";
     if (!formData.lastName) newErrors.lastName = "Last name is required.";
-    
     return newErrors;
   };
 
@@ -43,19 +44,17 @@ export default function ProfileStep1({ navigation }) {
     }
   };
 
-  //  date picker //
+  // Date picker
   const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
-  const [age, setAge] = useState(null)
+  const [age, setAge] = useState(null);
   const onChangeDate = (event, selectedDate) => {
     setShow(false); // Hide the picker after selection
     if (selectedDate) {
       setDate(selectedDate);
-      console.log(date)
       calculateAge(selectedDate);
     }
   };
-
 
   const calculateAge = (dob) => {
     const today = new Date();
@@ -69,18 +68,52 @@ export default function ProfileStep1({ navigation }) {
     }
     
     setAge(age);
-    console.log(age)
+    console.log(age);
   };
 
-  //  end of  date picker //
+  // Function to select profile image
+  const selectImage = async () => {
+    // Request permission to access the media library
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (permissionResult.granted === false) {
+      Alert.alert("Permission to access camera roll is required!");
+      return;
+    }
+
+    // Launch the image picker
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.cancelled) {
+      setProfileImage(result.uri); // Set the image URI
+    }
+  };
+
+  const handleBack = () => {
+    navigation.goBack(); // Navigate back to the previous screen
+  };
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={handleBack}>
+          <Ionicons name="arrow-back" size={24} color="black" />
+        </TouchableOpacity>
+      </View>
+
       <Text style={styles.subtitle}>Setup your profile</Text>
       <View style={styles.header}>
-        <Image
-          style={styles.logo}
-          source={require("../assets/profile_icon.png")}
-        />
+        <TouchableOpacity onPress={selectImage}> {/* Make the profile icon clickable */}
+          <Image
+            style={styles.logo}
+            source={profileImage ? { uri: profileImage } : require("../assets/profile_icon.png")} // Show selected image or default icon
+          />
+        </TouchableOpacity>
       </View>
 
       <View style={styles.formContainer}>
@@ -120,38 +153,20 @@ export default function ProfileStep1({ navigation }) {
           <Text>Female </Text>
         </View>
 
-        {/* <Text style={styles.label}>Date of Birth</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="DD/MM/YYYY"
-          value={formData.dateOfBirth}
-          type="date"
-          onChangeText={(text) => setFormData({ ...formData, dateOfBirth: text })}
-        /> */}
-{/* new date picker code  */}
-        
-          <Button title="Pick Date of Birth" onPress={() => setShow(true)} />
-          <Text style={styles.selectedDate}>Selected Date: {date.toDateString()}</Text>
+        <Button title="Pick Date of Birth" onPress={() => setShow(true)} />
+        <Text style={styles.selectedDate}>Selected Date: {date.toDateString()}</Text>
 
-          {show && (
-            <DateTimePicker
-              value={date}
-              mode="date"
-              maximumDate={new Date()}
-              display={Platform.OS === "ios" ? "inline" : "default"}
-              onChange={onChangeDate}
-            />
-          )}
+        {show && (
+          <DateTimePicker
+            value={date}
+            mode="date"
+            maximumDate={new Date()}
+            display={Platform.OS === "ios" ? "inline" : "default"}
+            onChange={onChangeDate}
+          />
+        )}
 
-{age !== null && <Text style={styles.ageText}>Your Age: {age} years</Text>}
-{/* end of new date picker code  */}
-
-        {/* <Text style={styles.label}>Age</Text>
-        <TextInput
-          style={styles.input}
-          keyboardType="numeric"
-          value={age}
-        /> */}
+        {age !== null && <Text style={styles.ageText}>Your Age: {age} years</Text>}
         {errors.age && <Text style={styles.errorText}>{errors.age}</Text>}
       </View>
 
@@ -169,7 +184,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#B7E3F5",
   },
   header: {
+    flexDirection: "row",
     alignItems: "center",
+    justifyContent: "flex-start",
     marginBottom: 5,
   },
   logo: {
@@ -177,6 +194,8 @@ const styles = StyleSheet.create({
     height: 130,
     resizeMode: "contain",
     borderRadius: 100,
+    alignSelf: 'center',
+    marginLeft: 90 // Center the image horizontally
   },
   subtitle: {
     fontSize: 24,
@@ -223,12 +242,13 @@ const styles = StyleSheet.create({
     shadowRadius: 15,
     shadowOffset: { width: 1, height: 1 },
     marginBottom: 10,
-    marginTop: 10,
+    marginTop: 25,
   },
   buttonText: {
     color: "#fff",
     fontSize: 18,
-  },ageText: {
+  },
+  ageText: {
     fontSize: 20,
     fontWeight: "bold",
     marginTop: 20,

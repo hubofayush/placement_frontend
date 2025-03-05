@@ -40,7 +40,10 @@ const SelectRole = ({ navigation }) => {
           </View>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.selctionBg}>
+        <TouchableOpacity 
+          style={styles.selctionBg}
+          onPress={() => navigation.navigate("CompanyOtp")}
+        >
           <Image
             style={styles.icons}
             source={require("../assets/companyLogo.png")}

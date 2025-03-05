@@ -103,7 +103,7 @@ const Login = ({ navigation }) => {
           <TouchableOpacity>
             <Text style={styles.forgotText}>
               Forgot your password?{"     "}
-              <Text style={styles.resetLink}>Reset here</Text>
+              <Text style={styles.resetLink}> Reset here </Text>
             </Text>
           </TouchableOpacity>
           <Text numberOfLines={1} style={styles.hrline}>

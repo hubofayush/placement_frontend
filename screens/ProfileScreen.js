@@ -66,7 +66,7 @@ const ProfileScreen = ({ navigation }) => {
 
           <TouchableOpacity
             style={styles.actionButton}
-            onPress={() => navigation.navigate("LogoutScreen")}
+            onPress={() => navigation.navigate("SelectRole")}
           >
             <Text style={{ color: "#0d47a1" }}>Logout </Text>
           </TouchableOpacity>

@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from "react";
 import {
   View,
@@ -6,12 +5,12 @@ import {
   TextInput,
   StyleSheet,
   ScrollView,
-  Button,
   TouchableOpacity,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons"; // For back arrow icon
+import { StatusBar } from "expo-status-bar";
 
-export default function ProfileStep3({ navigation }) {
+export default function CompanySetup2({ navigation }) {
   const [pinCode, setPinCode] = useState(["", "", "", "", "", ""]); // For 6-digit pin code
   const [district, setDistrict] = useState("RATNAGIRI"); // Default placeholder
   const [taluka, setTaluka] = useState("");
@@ -21,7 +20,7 @@ export default function ProfileStep3({ navigation }) {
   const handleSubmit = () => {
     console.log("Form submitted:", { pinCode, district, taluka });
     // Navigate to the next step or screen
-    navigation.navigate("LoadingSplashScreens"); // Adjust the navigation as needed
+    navigation.navigate("CompanyLoading1"); // Adjust the navigation as needed
   };
 
   const handleBack = () => {
@@ -53,14 +52,14 @@ export default function ProfileStep3({ navigation }) {
       <View style={styles.header}>
         <TouchableOpacity onPress={handleBack}>
           <Ionicons name="arrow-back" size={24} color="black" />
-        </TouchableOpacity> 
+        </TouchableOpacity>
       </View>
 
-      <View style={styles.dotContainer}>
-          <View style={styles.dot} />
-          <View style={styles.dot} />
-          <View style={[styles.dot, styles.activeDot]} />
-        </View>
+      {/* Active Indicator */}
+      <View style={styles.indicatorContainer}>
+        <View style={styles.inactiveIndicator} />
+        <View style={styles.activeIndicator} />
+      </View>
 
       <Text style={styles.title}>Location Entry</Text>
 
@@ -107,14 +106,13 @@ export default function ProfileStep3({ navigation }) {
 
         <TouchableOpacity style={styles.currentLocationButton}>
           <Text style={styles.currentLocationText}>
-          Current Location </Text>
+            Current Location </Text>
         </TouchableOpacity>
       </View>
 
       <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-                   <Text style={styles.buttonText}>NEXT </Text>
+        <Text style={styles.buttonText}>NEXT </Text>
       </TouchableOpacity>
-      
     </ScrollView>
   );
 }
@@ -131,21 +129,25 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 20,
   },
-  dotContainer: {
+  indicatorContainer: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 10
+    marginBottom: 10,
+    
   },
-  dot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: "#ccc",
-    marginHorizontal: 5,
+  activeIndicator: {
+    width: 32,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: "#585b5d",
+    marginRight: 4,
   },
-  activeDot: {
-    backgroundColor: "#0d47a1",
+  inactiveIndicator: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: "#a19e9e",
   },
   title: {
     fontSize: 24,
@@ -224,7 +226,6 @@ const styles = StyleSheet.create({
     color: "#0d47a1",
     fontSize: 16,
   },
-
   button: {
     backgroundColor: "#1565c0",
     paddingVertical: 7,
@@ -243,5 +244,4 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 19,
   },
-
 });

@@ -4,10 +4,18 @@ import Login from "./screens/auth/Loigin";
 import SelectRole from "./screens/SelectRole";
 
 import { useFonts } from "expo-font";
+import CompanySetup1 from "./screens/Company/CompanySetup1";
+import CompanySetup2 from "./screens/Company/CompanySetup2";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import OtpVerification from "./screens/auth/OtpVerification";
+import CompanyOtpVerification from "./screens/Company/CompanyOtpVerification";
 import LoadingSplashScreen from "./screens/LoadingSplashScreen"; // Import the LoadingSplashScreen
+import CompanyLoadingSplashScreen from "./screens/Company/CompanyLoadingSplashScreen";
+import CompanyLoadingSplashScreen1 from "./screens/Company/CompanyLoadingSplashScreen1";
+import CompanyAccountCreated from "./screens/Company/CompanyAccountCreated";
+import CompanyMarketplace from "./screens/CompanyMarketplace";
+
 import ProfileStep1 from "./screens/ProfileStep1";
 import ProfileStep2 from "./screens/ProfileStep2";
 import ProfileStep3 from "./screens/ProfileStep3";
@@ -72,6 +80,24 @@ export default function App() {
         <Stack.Screen
           name="Otp"
           component={OtpVerification}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="CompanyOtp"
+          component={CompanyOtpVerification}
+          options={{ headerShown: false }}
+        />
+        
+        <Stack.Screen
+          name="CompanyLoading"
+          component={CompanyLoadingSplashScreen}
+          options={{ headerShown: false }}
+        />
+
+        
+        <Stack.Screen
+          name="CompanyLoading1"
+          component={CompanyLoadingSplashScreen1}
           options={{ headerShown: false }}
         />
 
@@ -215,6 +241,31 @@ export default function App() {
           component={ApplyWithResumeFrame}
           options={{ headerShown: false }}
         />
+
+        <Stack.Screen
+          name="CompanySetup1"
+          component={CompanySetup1}
+          options={{ headerShown: false }}
+        />
+
+        <Stack.Screen
+          name="CompanySetup2"
+          component={CompanySetup2}
+          options={{ headerShown: false }}
+        />
+
+        <Stack.Screen
+          name="CompanyAccountCreated"
+          component={CompanyAccountCreated}
+          options={{ headerShown: false }}
+        />
+
+        <Stack.Screen
+          name="CompanyMarketplace"
+          component={CompanyMarketplace}
+          options={{ headerShown: false }}
+        />
+
 
       </Stack.Navigator>
     </NavigationContainer>

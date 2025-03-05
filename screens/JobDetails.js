@@ -12,6 +12,7 @@ import { Ionicons } from "@expo/vector-icons";
 
 const JobDetails = ({ navigation }) => {
   const [mobileNumber, setMobileNumber] = useState("");
+  const [activeNavItem, setActiveNavItem] = useState("JobDetails"); // Set initial active item
 
   return (
     <View style={styles.container}>
@@ -81,35 +82,51 @@ const JobDetails = ({ navigation }) => {
         </TouchableOpacity>
       </View>
 
-      {/* Bottom Navigation */}
+      {/* Bottom Navigation Component */}
       <View style={styles.bottomNav}>
         <TouchableOpacity
           style={styles.navItem}
-          onPress={() => navigation.navigate("Home")}
+          onPress={() => {
+            setActiveNavItem("Home");
+            navigation.navigate("Home");
+          }}
         >
-          <Ionicons name="home" size={24} color="black" />
+          <Ionicons name="home" size={24} color={activeNavItem === "Home" ? "#0d47a1" : "#595959"} />
           <Text style={styles.navText}>Home</Text>
+          {activeNavItem === "Home" && <View style={styles.activeLine} />}
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.navItem}
-          onPress={() => navigation.navigate("Notifications")}
+          onPress={() => {
+            setActiveNavItem("Notifications");
+            navigation.navigate("Notifications");
+          }}
         >
-          <Ionicons name="notifications" size={24} color="black" />
+          <Ionicons name="notifications" size={24} color={activeNavItem === "Notifications" ? "#0d47a1" : "#595959"} />
           <Text style={styles.navText}>Notification</Text>
+          {activeNavItem === "Notifications" && <View style={styles.activeLine} />}
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.navItem}
-          onPress={() => navigation.navigate("Search")}
+          onPress={() => {
+            setActiveNavItem("Search");
+            navigation.navigate("Search");
+          }}
         >
-          <Ionicons name="search" size={24} color="black" />
-          <Text style={styles.navText}>Search </Text>
+          <Ionicons name="search" size={24} color={activeNavItem === "Search" ? "#0d47a1" : "#595959"} />
+          <Text style={styles.navText}>Search</Text>
+          {activeNavItem === "Search" && <View style={styles.activeLine} />}
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.navItem}
-          onPress={() => navigation.navigate("Profile")}
+          onPress={() => {
+            setActiveNavItem("Profile");
+            navigation.navigate("Profile");
+          }}
         >
-          <Ionicons name="person" size={24} color="black" />
-          <Text style={styles.navText}>Profile </Text>
+          <Ionicons name="person" size={24} color={activeNavItem === "Profile" ? "#0d47a1" : "#595959"} />
+          <Text style={styles.navText}>Profile</Text>
+          {activeNavItem === "Profile" && <View style={styles.activeLine} />}
         </TouchableOpacity>
       </View>
     </View>
@@ -251,6 +268,12 @@ const styles = StyleSheet.create({
   },
   navText: {
     color: "#595959",
+  },
+  activeLine: {
+    width: "100%",
+    height: 4,
+    backgroundColor: "#1565c0",
+    marginTop: 5,
   },
 });
 

@@ -103,7 +103,7 @@ const SearchScreen = ({ navigation }) => {
           style={styles.navItem}
           onPress={() => {
             setActiveNavItem("Profile");
-            navigation.navigate("Profile");
+            navigation.navigate("ProfileScreen");
           }}
         >
           <Ionicons name="person" size={24} color={activeNavItem === "Profile" ? "#0d47a1" : "#595959"} />
