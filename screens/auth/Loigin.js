@@ -20,7 +20,7 @@ const Login = ({ navigation }) => {
   // Fetching data from server //
   const fetchdata = async () => {
     try {
-      const response = await axios.post('http://192.168.43.189:4000/api/v1/emp/login', {
+      const response = await axios.post('http://192.168.78.206:4000/api/v1/emp/login', {
         
           phone: mobileNumber,
           password: password,

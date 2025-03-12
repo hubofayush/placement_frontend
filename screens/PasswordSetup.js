@@ -30,7 +30,8 @@ const PasswordSetup = ({ navigation }) => {
 
     // If passwords match, proceed to save the account
     // Here you can implement your API call to save the account
-    console.log("Account created with email:", formData.email);
+    console.log("Account created with email:", formData
+    );
     
     // Redirect to Account Created page
     navigation.navigate("AccountSuccess"); // Make sure to have this screen in your navigator

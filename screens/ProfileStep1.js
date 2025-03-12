@@ -34,13 +34,32 @@ export default function ProfileStep1({ navigation }) {
     return newErrors;
   };
 
+  // const handleSubmit = () => {
+  //   const validationErrors = validateForm();
+  //   if (Object.keys(validationErrors).length > 0) {
+  //     setErrors(validationErrors);
+  //   } else {
+  //     console.log("Form submitted:", formData);
+  //     navigation.navigate("ProfileStep2");
+  //   }
+  // };
+
+
   const handleSubmit = () => {
+    console.log("handle submit function clicked ...")
     const validationErrors = validateForm();
     if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
+        setErrors(validationErrors);
     } else {
-      console.log("Form submitted:", formData);
-      navigation.navigate("ProfileStep2");
+        const fullFormData = {
+            ...formData,
+            dateOfBirth: date.toDateString(),  // Adding date of birth
+            age: age,                         // Adding calculated age
+            profileImage: profileImage        // Adding profile image URI
+        };
+
+        console.log("Form submitted:", fullFormData);
+        navigation.navigate("ProfileStep2", { formData: fullFormData });
     }
   };
 
@@ -83,14 +102,14 @@ export default function ProfileStep1({ navigation }) {
 
     // Launch the image picker
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes:"Images",
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
     });
 
-    if (!result.cancelled) {
-      setProfileImage(result.uri); // Set the image URI
+    if (!result.canceled) {
+      setProfileImage(result.assets[0].uri); // Set the image URI
     }
   };
 
@@ -257,5 +276,27 @@ const styles = StyleSheet.create({
   selectedDate: {
     fontSize: 16,
     marginTop: 10,
+  },
+
+  imagePicker: {
+    backgroundColor: "#E4F6FF",
+    height: 150,
+    width: 150,
+    borderRadius: 75,
+    alignItems: "center",
+    justifyContent: "center",
+    alignSelf: "center",
+    marginBottom: 20,
+    borderWidth: 2,
+    borderColor: "#1565c0",
+  },
+  avatar: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 75,
+  },
+  imageText: {
+    color: "#1565c0",
+    textAlign: "center",
   },
 });
