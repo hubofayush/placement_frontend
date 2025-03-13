@@ -9,18 +9,26 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons"; // For back arrow icon
 
-export default function ProfileStep3({ navigation }) {
+export default function ProfileStep3({ navigation ,route}) {
   const [pinCode, setPinCode] = useState(["", "", "", "", "", ""]); // For 6-digit pin code
   const [district, setDistrict] = useState("RATNAGIRI"); // Default placeholder
   const [taluka, setTaluka] = useState("");
 
   const otpInputs = Array(6).fill().map(() => useRef(null)); // Create refs for each input field
+const newFormData = route.params?.formData;
+  const formData = {
+    ...newFormData,
+    pinCode:pinCode.join(""),
+    district,
+    taluka
+  }
+
 
   const handleSubmit = () => {
-    const combinedPinCode = pinCode.join(""); // Combine the pin code into a single string
-    console.log("Form submitted:", { pinCode: combinedPinCode, district, taluka });
+    // Combine the pin code into a single string
+    console.log("Form submitted:", formData);
     // Navigate to the next step or screen
-    navigation.navigate("LoadingSplashScreens", { pinCode: combinedPinCode, district, taluka }); // Pass the combined data
+    navigation.navigate("PasswordSetup",{formData:formData} ); // Pass the combined data
   };
 
   const handleBack = () => {

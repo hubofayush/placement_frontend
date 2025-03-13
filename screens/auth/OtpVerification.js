@@ -317,8 +317,6 @@
 
 // export default OtpVerification;
 
-
-
 //updated code - remove validation logic
 
 import React, { useState, useRef } from "react";
@@ -374,8 +372,11 @@ const OtpVerification = ({ navigation }) => {
   };
 
   const navigateToLoadingScreen = () => {
+    const formData = {
+      mobileNumber: mobileNumber,
+    };
     // Navigate to the loading splash screen
-    navigation.navigate("LoadingSplashScreen"); // Replace with your actual loading screen name
+    navigation.navigate("ProfileStep1", { formData: formData }); // Replace with your actual loading screen name
   };
 
   // end of handling functions //
@@ -538,6 +539,5 @@ const styles = StyleSheet.create({
 });
 
 export default OtpVerification;
-
 
 //updated code end

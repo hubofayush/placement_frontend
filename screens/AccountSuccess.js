@@ -9,6 +9,7 @@ import {
   Image,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import * as SecureStore from "expo-secure-store";
 
 const AccountSuccess = ({ navigation }) => {
   const [formData, setFormData] = useState({
@@ -19,6 +20,14 @@ const AccountSuccess = ({ navigation }) => {
   });
 
   const [errorMessage, setErrorMessage] = useState("");
+  //
+  const getUserData = async () => {
+    const storedData = await SecureStore.getItemAsync("userData");
+    if (storedData) {
+      const userData = JSON.parse(storedData);
+      console.log("Retrieved Secure Data:", userData);
+    }
+  };
 
   const handleSave = () => {
     const { password, confirmPassword } = formData;
@@ -34,8 +43,6 @@ const AccountSuccess = ({ navigation }) => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      
-
       {/* Blue Wave Background */}
       <View style={styles.waveBackground} />
 
@@ -57,7 +64,10 @@ const AccountSuccess = ({ navigation }) => {
           <Text style={styles.successText}>
             You can now respond to jobs using your account as a portfolio.
           </Text>
-          <TouchableOpacity style={styles.getStartedButton} onPress={handleSave}>
+          <TouchableOpacity
+            style={styles.getStartedButton}
+            onPress={handleSave}
+          >
             <Text style={styles.getStartedText}>GET STARTED</Text>
           </TouchableOpacity>
         </View>

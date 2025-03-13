@@ -6,11 +6,17 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import axios from "axios";
+import * as SecureStore from "expo-secure-store";
 
-const PasswordSetup = ({ navigation }) => {
+const PasswordSetup = ({ navigation, route }) => {
+  const newFormData = route.params?.formData;
+  // console.log(newFormData)
   const [formData, setFormData] = useState({
+    ...newFormData,
     email: "",
     password: "",
     confirmPassword: "",
@@ -19,7 +25,24 @@ const PasswordSetup = ({ navigation }) => {
 
   const [errorMessage, setErrorMessage] = useState(""); // State for error messages
 
-  const handleSave = () => {
+  let firstavatar = formData.profileImage;
+  let finalAvatar = {};
+  if (firstavatar) {
+    const fileName = firstavatar.split("/").pop();
+    const fileType = fileName.split(".").pop();
+    // finalAvatar = {
+    //   uri: firstavatar,
+    //   name: fileName,
+    //   type: `image/${fileType}`,
+    // };
+
+    finalAvatar.uri = firstavatar;
+    finalAvatar.name = fileName;
+    finalAvatar.type = `image/${fileType}`;
+  }
+
+  const handleSave = async () => {
+    console.log("clicked");
     const { password, confirmPassword } = formData;
 
     // Check if passwords match
@@ -28,24 +51,115 @@ const PasswordSetup = ({ navigation }) => {
       return;
     }
 
+    // const formDataToSend = {
+    //   fName: formData.firstName,
+    //   lName: formData.lastName,
+    //   age: formData.age,
+    //   phone: formData.mobileNumber,
+    //   password: confirmPassword,
+    //   dateOfBirth: formData.dateOfBirth,
+    //   experience: formData.workExperience,
+    //   position: formData.jobRole,
+    //   salary: formData.salaryRange,
+    //   employed: formData.currentlyWorking,
+    //   education: formData.education,
+    //   district: formData.district,
+    //   division: formData.taluka,
+    //   pincode: formData.pinCode,
+    //   gender: formData.gender,
+    // };
+    const formDataToSend = new FormData();
+
+    formDataToSend.append("fName", formData.firstName);
+    formDataToSend.append("lName", formData.lastName);
+    formDataToSend.append("age", formData.age);
+    formDataToSend.append("phone", formData.mobileNumber);
+    formDataToSend.append("password", confirmPassword);
+    formDataToSend.append("dateOfBirth", formData.dateOfBirth);
+    formDataToSend.append("experience", formData.workExperience);
+    formDataToSend.append("position", formData.jobRole);
+    formDataToSend.append("salary", formData.salaryRange);
+    formDataToSend.append("employed", formData.currentlyWorking);
+    formDataToSend.append("education", formData.education);
+    formDataToSend.append("district", formData.district);
+    formDataToSend.append("division", formData.taluka);
+    formDataToSend.append("pincode", formData.pinCode);
+    formDataToSend.append("gender", formData.gender);
+
+    // console.log(formDataToSend);
+    if (firstavatar) {
+      formDataToSend.append("avatar", {
+        uri: finalAvatar.uri,
+        name: finalAvatar.name,
+        type: finalAvatar.type,
+      });
+    }
+    console.log(formDataToSend);
+    try {
+      const response = await axios.post(
+        "http://192.168.78.206:4000/api/v1/emp/register",
+        formDataToSend,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      if (response.status === 201) {
+        const userData = response.data.data;
+
+        // Store data securely
+        await SecureStore.setItemAsync("userData", JSON.stringify(userData));
+      }
+      // console.log(formDataToSend);
+      Alert.alert("Success", "User Registered");
+      console.log(response.data);
+      console.log("status", response.status);
+      navigation.navigate("AccountSuccess"); // Make sure to have this screen in your navigator
+      console.log("Account created with email:");
+    } catch (error) {
+      console.error(
+        "registration error",
+        error.responce?.data || error.message
+      );
+      Alert.alert("Error");
+    }
+
     // If passwords match, proceed to save the account
     // Here you can implement your API call to save the account
-    console.log("Account created with email:", formData
-    );
-    
+
+    // const response = await axios.post(
+    //   "http://192.168.135.206:4000/api/v1/emp/register",
+    //   formDataToSend,
+    //   {
+    //     headers: {
+    //       "Content-Type": "multipart/form-data",
+    //     },
+    //   }
+    // );
+    // Alert.alert("Success", "User Registered");
+    // console.log(response.data);
+    // navigation.navigate("AccountSuccess");
+
+    // if (!response.data) {
+    //   console.error("Registration error:");
+    //   navigation.navigate("AccountSuccess");
+    //   Alert.alert("Error", "Registration failed.");
+    // }
     // Redirect to Account Created page
-    navigation.navigate("AccountSuccess"); // Make sure to have this screen in your navigator
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-
       {/* Back Button */}
-      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => navigation.goBack()}
+      >
         <Ionicons name="arrow-back" size={24} color="black" />
       </TouchableOpacity>
 
-      
       {/* Progress Dots */}
       <View style={styles.progressDots}>
         <View style={styles.progressDot} />
@@ -56,7 +170,6 @@ const PasswordSetup = ({ navigation }) => {
       <Text style={styles.title}>Setup Your Password</Text>
       {/* Main Content */}
       <View style={styles.cardContainer}>
-
         <Text style={styles.enterNumber}>Enter Email</Text>
         <TextInput
           style={styles.input}
@@ -72,45 +185,42 @@ const PasswordSetup = ({ navigation }) => {
           placeholderTextColor="#888"
           secureTextEntry
           value={formData.password}
-          onChangeText={(value) => setFormData({ ...formData, password: value })}
+          onChangeText={(value) =>
+            setFormData({ ...formData, password: value })
+          }
         />
-         <Text style={styles.enterNumber}>Confirm Your Password</Text>
+        <Text style={styles.enterNumber}>Confirm Your Password</Text>
         <TextInput
           style={styles.input}
           placeholder=" Password "
           placeholderTextColor="#888"
           secureTextEntry
           value={formData.confirmPassword}
-          onChangeText={(value) => setFormData({ ...formData, confirmPassword: value })}
+          onChangeText={(value) =>
+            setFormData({ ...formData, confirmPassword: value })
+          }
         />
 
-        {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
-
-
-
-        
+        {errorMessage ? (
+          <Text style={styles.errorText}>{errorMessage}</Text>
+        ) : null}
       </View>
       <View style={styles.checkboxContainer}>
-          <TouchableOpacity
-            style={styles.checkbox}
-            onPress={() => setFormData({ ...formData, agreed: !formData.agreed })}
-          >
-            {formData.agreed && <View style={styles.checkboxChecked} />}
-          </TouchableOpacity>
-         
-
-      <Text style={styles.checkboxLabel}>
-            I agree to Vayun's{" "}
-            <Text style={styles.link}>terms 
-                and conditions b </Text>.
-       </Text>
-       </View>
-       <TouchableOpacity
-          style={styles.saveButton}
-          onPress={handleSave}
+        <TouchableOpacity
+          style={styles.checkbox}
+          onPress={() => setFormData({ ...formData, agreed: !formData.agreed })}
         >
-          <Text style={styles.saveButtonText}>SAVE</Text>
+          {formData.agreed && <View style={styles.checkboxChecked} />}
         </TouchableOpacity>
+
+        <Text style={styles.checkboxLabel}>
+          I agree to Vayun's{" "}
+          <Text style={styles.link}>terms and conditions b </Text>.
+        </Text>
+      </View>
+      <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+        <Text style={styles.saveButtonText}>SAVE</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 };

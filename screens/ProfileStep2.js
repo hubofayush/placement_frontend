@@ -8,23 +8,39 @@ import {
   Button,
   TouchableOpacity,
 } from "react-native";
-import { Picker } from '@react-native-picker/picker'; // For dropdowns
+import { Picker } from "@react-native-picker/picker"; // For dropdowns
 import { Switch } from "react-native-paper"; // For toggle switch
 import { Ionicons } from "@expo/vector-icons"; // For back arrow icon
+import axios from "axios";
+export default function ProfileStep2({ navigation, route }) {
+  const [errors, setErrors] = useState({});
 
-export default function ProfileStep2({ navigation }) {
+  const newFormData = route.params?.formData || {};
+
   const [formData, setFormData] = useState({
+    ...newFormData,
     education: "",
     workExperience: "",
     jobRole: "",
     salaryRange: "",
     currentlyWorking: false,
   });
-
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.education) newErrors.education = "Education is required.";
+    if (!formData.workExperience)
+      newErrors.workExperience = "Work Experience is required.";
+    return newErrors;
+  };
   const handleSubmit = () => {
-    console.log("Form submitted:", formData);
-    // Navigate to the next step or screen
-    navigation.navigate("ProfileStep3"); // Adjust the navigation as needed
+    const validationErrors = validateForm();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+    } else {
+      // console.log("Form submitted:", formData);
+      // Navigate to the next step or screen
+      navigation.navigate("ProfileStep3", { formData: formData }); // Adjust the navigation as needed
+    }
   };
 
   const handleBack = () => {
@@ -40,10 +56,9 @@ export default function ProfileStep2({ navigation }) {
       </View>
 
       <View style={styles.dotContainer}>
-          
-          <View style={styles.dot} />
-          <View style={[styles.dot, styles.activeDot]} />
-          <View style={styles.dot} />
+        <View style={styles.dot} />
+        <View style={[styles.dot, styles.activeDot]} />
+        <View style={styles.dot} />
       </View>
 
       <Text style={styles.title}>Profile Step 2</Text>
@@ -53,7 +68,9 @@ export default function ProfileStep2({ navigation }) {
         <Picker
           selectedValue={formData.education}
           style={styles.picker}
-          onValueChange={(itemValue) => setFormData({ ...formData, education: itemValue })}
+          onValueChange={(itemValue) =>
+            setFormData({ ...formData, education: itemValue })
+          }
         >
           <Picker.Item label="Select education" value="" />
           <Picker.Item label="SSC" value="SSC" />
@@ -62,21 +79,21 @@ export default function ProfileStep2({ navigation }) {
           <Picker.Item label="Diploma" value="Diploma" />
           <Picker.Item label="Bachelor's Degree" value="bachelors" />
           <Picker.Item label="Master's Degree" value="masters" />
-          
         </Picker>
 
         <Text style={styles.label}>Work Experience</Text>
         <Picker
           selectedValue={formData.workExperience}
           style={styles.picker}
-          onValueChange={(itemValue) => setFormData({ ...formData, workExperience: itemValue })}
+          onValueChange={(itemValue) =>
+            setFormData({ ...formData, workExperience: itemValue })
+          }
         >
           <Picker.Item label="Select experience" value="" />
-          <Picker.Item label="Freshers" value="0" />
-          <Picker.Item label="Less than 1 year" value="0-1" />
-          <Picker.Item label="0-2 years" value="0-2" />
-          <Picker.Item label="2-5 years" value="2-5" />
-          <Picker.Item label="5+ years" value="5+" />
+          <Picker.Item label="Freshers" value="fresher" />
+          <Picker.Item label="Less than 1 year" value="less than 1" />
+          <Picker.Item label="2-5 years" value="2 to 5 years" />
+          <Picker.Item label="5+ years" value="above 5" />
         </Picker>
 
         <Text style={styles.label}>Current/Last Job Role</Text>
@@ -92,20 +109,27 @@ export default function ProfileStep2({ navigation }) {
           style={styles.input}
           placeholder="Enter your salary range"
           value={formData.salaryRange}
-          onChangeText={(text) => setFormData({ ...formData, salaryRange: text })}
+          onChangeText={(text) =>
+            setFormData({ ...formData, salaryRange: text })
+          }
         />
 
         <View style={styles.toggleContainer}>
           <Text style={styles.label}>I am currently working here</Text>
           <Switch
             value={formData.currentlyWorking}
-            onValueChange={() => setFormData({ ...formData, currentlyWorking: !formData.currentlyWorking })}
+            onValueChange={() =>
+              setFormData({
+                ...formData,
+                currentlyWorking: !formData.currentlyWorking,
+              })
+            }
           />
         </View>
       </View>
 
       <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-             <Text style={styles.buttonText}>NEXT </Text>
+        <Text style={styles.buttonText}>NEXT </Text>
       </TouchableOpacity>
     </ScrollView>
   );

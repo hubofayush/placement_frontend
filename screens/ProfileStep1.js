@@ -12,11 +12,13 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { RadioButton } from "react-native-paper";
-import * as ImagePicker from 'expo-image-picker'; // Import the image picker from expo
+import * as ImagePicker from "expo-image-picker"; // Import the image picker from expo
 import { Ionicons } from "@expo/vector-icons"; // Import the back arrow icon
 
-export default function ProfileStep1({ navigation }) {
+export default function ProfileStep1({ navigation, route }) {
+  const newFormData = route.params?.formData;
   const [formData, setFormData] = useState({
+    ...newFormData,
     firstName: "",
     lastName: "",
     gender: "male",
@@ -34,37 +36,10 @@ export default function ProfileStep1({ navigation }) {
     return newErrors;
   };
 
-  // const handleSubmit = () => {
-  //   const validationErrors = validateForm();
-  //   if (Object.keys(validationErrors).length > 0) {
-  //     setErrors(validationErrors);
-  //   } else {
-  //     console.log("Form submitted:", formData);
-  //     navigation.navigate("ProfileStep2");
-  //   }
-  // };
-
-
-  const handleSubmit = () => {
-    console.log("handle submit function clicked ...")
-    const validationErrors = validateForm();
-    if (Object.keys(validationErrors).length > 0) {
-        setErrors(validationErrors);
-    } else {
-        const fullFormData = {
-            ...formData,
-            dateOfBirth: date.toDateString(),  // Adding date of birth
-            age: age,                         // Adding calculated age
-            profileImage: profileImage        // Adding profile image URI
-        };
-
-        console.log("Form submitted:", fullFormData);
-        navigation.navigate("ProfileStep2", { formData: fullFormData });
-    }
-  };
-
   // Date picker
-  const [date, setDate] = useState(new Date());
+  const todaysDate = new Date();
+  todaysDate.setFullYear(todaysDate.getFullYear() - 18);
+  const [date, setDate] = useState(todaysDate);
   const [show, setShow] = useState(false);
   const [age, setAge] = useState(null);
   const onChangeDate = (event, selectedDate) => {
@@ -85,15 +60,15 @@ export default function ProfileStep1({ navigation }) {
     if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
       age--;
     }
-    
+
     setAge(age);
-    console.log(age);
   };
 
   // Function to select profile image
   const selectImage = async () => {
     // Request permission to access the media library
-    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    const permissionResult =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (permissionResult.granted === false) {
       Alert.alert("Permission to access camera roll is required!");
@@ -102,7 +77,7 @@ export default function ProfileStep1({ navigation }) {
 
     // Launch the image picker
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes:"Images",
+      mediaTypes: "Images",
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
@@ -117,6 +92,26 @@ export default function ProfileStep1({ navigation }) {
     navigation.goBack(); // Navigate back to the previous screen
   };
 
+  // handle submit function //
+  const handleSubmit = () => {
+    console.log("handle submit function clicked ...");
+    const validationErrors = validateForm();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+    } else {
+      const fullFormData = {
+        ...formData,
+        dateOfBirth: date.toDateString(), // Adding date of birth
+        age: age, // Adding calculated age
+        profileImage: profileImage, // Adding profile image URI
+      };
+
+      console.log("Form submitted:", fullFormData);
+      navigation.navigate("ProfileStep2", { formData: fullFormData });
+    }
+  };
+  // end of handle submit function //
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.header}>
@@ -127,10 +122,16 @@ export default function ProfileStep1({ navigation }) {
 
       <Text style={styles.subtitle}>Setup your profile</Text>
       <View style={styles.header}>
-        <TouchableOpacity onPress={selectImage}> {/* Make the profile icon clickable */}
+        <TouchableOpacity onPress={selectImage}>
+          {" "}
+          {/* Make the profile icon clickable */}
           <Image
             style={styles.logo}
-            source={profileImage ? { uri: profileImage } : require("../assets/profile_icon.png")} // Show selected image or default icon
+            source={
+              profileImage
+                ? { uri: profileImage }
+                : require("../assets/profile_icon.png")
+            } // Show selected image or default icon
           />
         </TouchableOpacity>
       </View>
@@ -173,19 +174,23 @@ export default function ProfileStep1({ navigation }) {
         </View>
 
         <Button title="Pick Date of Birth" onPress={() => setShow(true)} />
-        <Text style={styles.selectedDate}>Selected Date: {date.toDateString()}</Text>
+        <Text style={styles.selectedDate}>
+          Selected Date: {date.toDateString()}
+        </Text>
 
         {show && (
           <DateTimePicker
             value={date}
             mode="date"
-            maximumDate={new Date()}
+            maximumDate={todaysDate}
             display={Platform.OS === "ios" ? "inline" : "default"}
             onChange={onChangeDate}
           />
         )}
 
-        {age !== null && <Text style={styles.ageText}>Your Age: {age} years</Text>}
+        {age !== null && (
+          <Text style={styles.ageText}>Your Age: {age} years</Text>
+        )}
         {errors.age && <Text style={styles.errorText}>{errors.age}</Text>}
       </View>
 
@@ -213,8 +218,8 @@ const styles = StyleSheet.create({
     height: 130,
     resizeMode: "contain",
     borderRadius: 100,
-    alignSelf: 'center',
-    marginLeft: 90 // Center the image horizontally
+    alignSelf: "center",
+    marginLeft: 90, // Center the image horizontally
   },
   subtitle: {
     fontSize: 24,
