@@ -97,7 +97,7 @@ const PasswordSetup = ({ navigation, route }) => {
     console.log(formDataToSend);
     try {
       const response = await axios.post(
-        "http://192.168.78.206:4000/api/v1/emp/register",
+        "http://192.168.43.189:4000/api/v1/emp/register",
         formDataToSend,
         {
           headers: {
@@ -106,18 +106,27 @@ const PasswordSetup = ({ navigation, route }) => {
         }
       );
 
-      if (response.status === 201) {
+      // const responce = await fetch(
+      //   `http://192.168.250.206:4000/api/v1/emp/register`,
+      //   {
+      //     method: "POST",
+      //     body: formDataToSend,
+      //   }
+      // );
+      console.log(response.data);
+      if (response.data) {
+        console.log("object fff");
         const userData = response.data.data;
 
         // Store data securely
         await SecureStore.setItemAsync("userData", JSON.stringify(userData));
+
+        const StoredData = await SecureStore.getItemAsync("userData");
+        // console.log(formDataToSend);
+        Alert.alert("Success", "User Registered");
+        console.log("status", response.status);
+        navigation.navigate("AccountSuccess", { storedData: StoredData }); // Make sure to have this screen in your navigator
       }
-      // console.log(formDataToSend);
-      Alert.alert("Success", "User Registered");
-      console.log(response.data);
-      console.log("status", response.status);
-      navigation.navigate("AccountSuccess"); // Make sure to have this screen in your navigator
-      console.log("Account created with email:");
     } catch (error) {
       console.error(
         "registration error",

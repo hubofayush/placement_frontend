@@ -8,27 +8,29 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons"; // For back arrow icon
+import { Picker } from "@react-native-picker/picker"; // Import Picker
 
-export default function ProfileStep3({ navigation ,route}) {
+export default function ProfileStep3({ navigation, route }) {
   const [pinCode, setPinCode] = useState(["", "", "", "", "", ""]); // For 6-digit pin code
   const [district, setDistrict] = useState("RATNAGIRI"); // Default placeholder
-  const [taluka, setTaluka] = useState("");
+  const [taluka, setTaluka] = useState(""); // State for selected taluka
 
-  const otpInputs = Array(6).fill().map(() => useRef(null)); // Create refs for each input field
-const newFormData = route.params?.formData;
+  const otpInputs = Array(6)
+    .fill()
+    .map(() => useRef(null)); // Create refs for each input field
+  const newFormData = route.params?.formData;
   const formData = {
     ...newFormData,
-    pinCode:pinCode.join(""),
+    pinCode: pinCode.join(""),
     district,
-    taluka
-  }
-
+    taluka,
+  };
 
   const handleSubmit = () => {
     // Combine the pin code into a single string
     console.log("Form submitted:", formData);
     // Navigate to the next step or screen
-    navigation.navigate("PasswordSetup",{formData:formData} ); // Pass the combined data
+    navigation.navigate("PasswordSetup", { formData: formData }); // Pass the combined data
   };
 
   const handleBack = () => {
@@ -49,7 +51,11 @@ const newFormData = route.params?.formData;
   };
 
   const handleKeyPress = (e, index) => {
-    if (e.nativeEvent.key === "Backspace" && pinCode[index] === "" && index > 0) {
+    if (
+      e.nativeEvent.key === "Backspace" &&
+      pinCode[index] === "" &&
+      index > 0
+    ) {
       // Move focus to the previous input when backspace is pressed
       otpInputs[index - 1].current.focus();
     }
@@ -60,7 +66,7 @@ const newFormData = route.params?.formData;
       <View style={styles.header}>
         <TouchableOpacity onPress={handleBack}>
           <Ionicons name="arrow-back" size={24} color="black" />
-        </TouchableOpacity> 
+        </TouchableOpacity>
       </View>
 
       <View style={styles.dotContainer}>
@@ -93,18 +99,27 @@ const newFormData = route.params?.formData;
         <Text style={styles.label}>District</Text>
         <TextInput
           style={styles.input}
-          placeholder="RATNAGIRI"
+          placeholder="SINDHUDURG"
           value={district}
           onChangeText={setDistrict}
         />
 
         <Text style={styles.label}>Taluka</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your taluka"
-          value={taluka}
-          onChangeText={setTaluka}
-        />
+        <Picker
+          selectedValue={taluka}
+          style={styles.picker}
+          onValueChange={(itemValue) => setTaluka(itemValue)}
+        >
+          <Picker.Item label="Select Taluka" value="" />
+          <Picker.Item label="Vengurla" value="Vengurla" />
+          <Picker.Item label="VaibhavWadi" value="VaibhavWadi" />
+          <Picker.Item label="Kudal" value="Kudal" />
+          <Picker.Item label="Kankavali" value="Kankavali" />
+          <Picker.Item label="Malavan" value="Malavan" />
+          <Picker.Item label="Sawantwadi" value="Sawantwadi" />
+          <Picker.Item label="Devghad" value="Devghad " />
+          <Picker.Item label="Dodamarg" value="Dodamarg" />
+        </Picker>
 
         <View style={styles.orContainer}>
           <View style={styles.orLine} />
@@ -113,15 +128,13 @@ const newFormData = route.params?.formData;
         </View>
 
         <TouchableOpacity style={styles.currentLocationButton}>
-          <Text style={styles.currentLocationText}>
-          Current Location </Text>
+          <Text style={styles.currentLocationText}>Current Location </Text>
         </TouchableOpacity>
       </View>
 
       <TouchableOpacity style={styles.button} onPress={handleSubmit}>
         <Text style={styles.buttonText}>NEXT </Text>
       </TouchableOpacity>
-      
     </ScrollView>
   );
 }
@@ -142,7 +155,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 10
+    marginBottom: 10,
   },
   dot: {
     width: 10,
@@ -199,6 +212,14 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     paddingHorizontal: 10,
     marginBottom: 10,
+  },
+  picker: {
+    height: 50,
+    width: "100%",
+    marginBottom: 10,
+    borderColor: "#ddd",
+    borderWidth: 1,
+    borderRadius: 5,
   },
   orContainer: {
     flexDirection: "row",

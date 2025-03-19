@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
-import axios from 'axios';
+import axios from "axios";
 
 const Login = ({ navigation }) => {
   const [mobileNumber, setMobileNumber] = useState("");
@@ -20,14 +20,16 @@ const Login = ({ navigation }) => {
   // Fetching data from server //
   const fetchdata = async () => {
     try {
-      const response = await axios.post('http://192.168.78.206:4000/api/v1/emp/login', {
-        
+      const response = await axios.post(
+        "http://192.168.250.206:4000/api/v1/emp/login",
+        {
           phone: mobileNumber,
           password: password,
-        
-      },{
-        withCredentials:true
-      });
+        },
+        {
+          withCredentials: true,
+        }
+      );
       console.log(response.data.data);
       // Handle successful response here (e.g., navigate to another screen)
       if (response.data.sucess) {
@@ -35,16 +37,22 @@ const Login = ({ navigation }) => {
         Alert.alert("Login Successful", "Welcome back!");
         navigation.navigate("Marketplace"); // Replace with your next screen
       } else {
-        Alert.alert("Login Failed", response.data.message || "Invalid credentials");
+        Alert.alert(
+          "Login Failed",
+          response.data.message || "Invalid credentials"
+        );
       }
     } catch (error) {
       console.error("Error", error);
-      Alert.alert("Error", "An error occurred while logging in. Please try again.");
+      Alert.alert(
+        "Error",
+        "An error occurred while logging in. Please try again."
+      );
     } finally {
       setLoading(false); // Reset loading state
     }
   };
-  // End of fetching data from server // 
+  // End of fetching data from server //
 
   const loginUser = async () => {
     setLoading(true);
@@ -94,7 +102,11 @@ const Login = ({ navigation }) => {
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity style={styles.loginButton} onPress={loginUser} disabled={loading}>
+          <TouchableOpacity
+            style={styles.loginButton}
+            onPress={loginUser}
+            disabled={loading}
+          >
             <Text style={styles.loginButtonText}>
               {loading ? "Please wait..." : "Login"}
             </Text>
@@ -109,7 +121,9 @@ const Login = ({ navigation }) => {
           <Text numberOfLines={1} style={styles.hrline}>
             _____________________________________________________
           </Text>
-          <Text style={styles.creatacccountfont}>Don't have an account? ...  </Text>
+          <Text style={styles.creatacccountfont}>
+            Don't have an account? ...{" "}
+          </Text>
           <TouchableOpacity
             style={styles.createAccountButton}
             onPress={() => navigation.navigate("SelectRole")}
