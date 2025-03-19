@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -12,6 +12,7 @@ import { Ionicons } from "@expo/vector-icons";
 import * as SecureStore from "expo-secure-store";
 
 const AccountSuccess = ({ navigation }) => {
+  const [data, setdata] = useState([]);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -28,6 +29,19 @@ const AccountSuccess = ({ navigation }) => {
       console.log("Retrieved Secure Data:", userData);
     }
   };
+
+  useEffect(() => {
+    const getUserData = async () => {
+      const storedData = await SecureStore.getItemAsync("userData");
+      if (storedData) {
+        const userData = JSON.parse(storedData);
+        setdata(userData);
+        console.log("Retrieved Secure Data:", userData);
+      }
+    };
+    getUserData();
+  }, []);
+  console.log(data);
 
   const handleSave = () => {
     const { password, confirmPassword } = formData;
@@ -52,7 +66,7 @@ const AccountSuccess = ({ navigation }) => {
         <View style={styles.profileContainer}>
           <Ionicons name="person-circle" size={80} color="#000000" />
         </View>
-        <Text style={styles.title}>Pundalik Desai</Text>
+        <Text style={styles.title}>{data[0].fName}</Text>
         <Text style={styles.location}>Ratnagiri </Text>
 
         {/* Success Message */}
