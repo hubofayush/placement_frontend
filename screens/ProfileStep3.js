@@ -111,14 +111,15 @@ export default function ProfileStep3({ navigation, route }) {
           onValueChange={(itemValue) => setTaluka(itemValue)}
         >
           <Picker.Item label="Select Taluka" value="" />
-          <Picker.Item label="Vengurla" value="Vengurla" />
-          <Picker.Item label="VaibhavWadi" value="VaibhavWadi" />
-          <Picker.Item label="Kudal" value="Kudal" />
-          <Picker.Item label="Kankavali" value="Kankavali" />
-          <Picker.Item label="Malavan" value="Malavan" />
-          <Picker.Item label="Sawantwadi" value="Sawantwadi" />
-          <Picker.Item label="Devghad" value="Devghad " />
-          <Picker.Item label="Dodamarg" value="Dodamarg" />
+          <Picker.Item label="Mandangad" value="Mandangad" />
+          <Picker.Item label="Dapoli" value="Dapoli" />
+          <Picker.Item label="Khed" value="Khed" />
+          <Picker.Item label="Chiplun" value="Chiplun" />
+          <Picker.Item label="Guhagar" value="Guhagar" />
+          <Picker.Item label="Sangameshwar" value="Sangameshwar" />
+          <Picker.Item label="Ratnagiri" value="Ratnagiri" />
+          <Picker.Item label="Lanja" value="Lanja" />
+          <Picker.Item label="Rajapur" value="Rajapur" />
         </Picker>
 
         <View style={styles.orContainer}>

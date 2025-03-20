@@ -2,57 +2,38 @@ import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  Image,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as SecureStore from "expo-secure-store";
 
-const AccountSuccess = ({ navigation }) => {
-  const [data, setdata] = useState([]);
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    confirmPassword: "",
-    agreed: false,
-  });
-
-  const [errorMessage, setErrorMessage] = useState("");
-  //
-  const getUserData = async () => {
-    const storedData = await SecureStore.getItemAsync("userData");
-    if (storedData) {
-      const userData = JSON.parse(storedData);
-      console.log("Retrieved Secure Data:", userData);
-    }
-  };
+const AccountSuccess = ({ navigation, route }) => {
+  const [userData, setUserData] = useState(); // Changed to hold the entire user data object
 
   useEffect(() => {
-    const getUserData = async () => {
-      const storedData = await SecureStore.getItemAsync("userData");
-      if (storedData) {
-        const userData = JSON.parse(storedData);
-        setdata(userData);
-        console.log("Retrieved Secure Data:", userData);
-      }
-    };
-    getUserData();
+    console.log("Hooked called");
+    const data = route.params?.StoredData;
+    if (!data) {
+      console.log("error while fetching No user data found in SecureStore.");
+    }
+    const userData = JSON.parse(data);
+    setUserData(userData[0]); // Access the first user object in the data array
+    console.log("Retrieved Secure Data:", userData[0].fName);
   }, []);
-  console.log(data);
+
+  // const getUserData = async () => {
+  //   console.log("get user function called");
+  //   // const storedData = await SecureStore.getItemAsync("userData");
+  // };
+
+  // useEffect(() => {
+  //   getUserData();
+  // }, []);
 
   const handleSave = () => {
-    const { password, confirmPassword } = formData;
-
-    if (password !== confirmPassword) {
-      setErrorMessage("Passwords do not match.");
-      return;
-    }
-
-    console.log("Account created with email:", formData.email);
-    navigation.navigate("Marketplace");
+    navigation.navigate("Login", { phone: userData.phone });
   };
 
   return (
@@ -66,8 +47,14 @@ const AccountSuccess = ({ navigation }) => {
         <View style={styles.profileContainer}>
           <Ionicons name="person-circle" size={80} color="#000000" />
         </View>
-        <Text style={styles.title}>{data[0].fName}</Text>
-        <Text style={styles.location}>Ratnagiri </Text>
+        {userData ? ( // Check if userData is available
+          <>
+            <Text style={styles.title}>{userData.fName}</Text>
+            {/* Assuming location is an array */}
+          </>
+        ) : (
+          <Text style={styles.title}>Loading...</Text>
+        )}
 
         {/* Success Message */}
         <View style={styles.successMessageContainer}>
@@ -98,16 +85,6 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     backgroundColor: "#b7e3f5",
     padding: 20,
-  },
-  statusBar: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: 10,
-    backgroundColor: "transparent",
-  },
-  statusText: {
-    color: "black",
   },
   waveBackground: {
     position: "absolute",

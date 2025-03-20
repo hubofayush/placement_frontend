@@ -97,7 +97,7 @@ const PasswordSetup = ({ navigation, route }) => {
     console.log(formDataToSend);
     try {
       const response = await axios.post(
-        "http://192.168.43.189:4000/api/v1/emp/register",
+        "https://vayun-backend.onrender.com/api/v1/emp/register",
         formDataToSend,
         {
           headers: {
@@ -122,10 +122,15 @@ const PasswordSetup = ({ navigation, route }) => {
         await SecureStore.setItemAsync("userData", JSON.stringify(userData));
 
         const StoredData = await SecureStore.getItemAsync("userData");
+        // const data = JSON.parse(StoredData);
+        if (!StoredData) {
+          console.log("error while storing data on EXPO");
+        }
+        console.log("data", StoredData);
         // console.log(formDataToSend);
         Alert.alert("Success", "User Registered");
         console.log("status", response.status);
-        navigation.navigate("AccountSuccess", { storedData: StoredData }); // Make sure to have this screen in your navigator
+        navigation.navigate("AccountSuccess", { StoredData: StoredData }); // Make sure to have this screen in your navigator
       }
     } catch (error) {
       console.error(
