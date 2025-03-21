@@ -11,7 +11,7 @@ import { Ionicons } from "@expo/vector-icons"; // For back arrow icon
 import { Picker } from "@react-native-picker/picker"; // Import Picker
 
 export default function ProfileStep3({ navigation, route }) {
-  const [pinCode, setPinCode] = useState(["", "", "", "", "", ""]); // For 6-digit pin code
+  const [pinCode, setPinCode] = useState(""); //just one single string
   const [district, setDistrict] = useState("RATNAGIRI"); // Default placeholder
   const [taluka, setTaluka] = useState(""); // State for selected taluka
 
@@ -21,7 +21,7 @@ export default function ProfileStep3({ navigation, route }) {
   const newFormData = route.params?.formData;
   const formData = {
     ...newFormData,
-    pinCode: pinCode.join(""),
+    pinCode,
     district,
     taluka,
   };
@@ -78,7 +78,7 @@ export default function ProfileStep3({ navigation, route }) {
       <Text style={styles.title}>Location Entry</Text>
 
       <View style={styles.formContainer}>
-        <View style={styles.pinContainer}>
+        {/* <View style={styles.pinContainer}>
           <Text style={styles.label}>Pin Code </Text>
           <View style={styles.pinInputContainer}>
             {[...Array(6)].map((_, index) => (
@@ -94,7 +94,19 @@ export default function ProfileStep3({ navigation, route }) {
               />
             ))}
           </View>
-        </View>
+        </View> */}
+
+        <Text style={styles.label}>Pin Code</Text>
+        <TextInput
+          style={styles.pinCodeInput}
+          placeholder="Enter 6-digit PIN code"
+          keyboardType="number-pad"
+          maxLength={6}
+          value={pinCode}
+          onChangeText={(value) => {
+            if (/^\d*$/.test(value)) setPinCode(value);
+          }}
+        />
 
         <Text style={styles.label}>District</Text>
         <TextInput
@@ -186,7 +198,7 @@ const styles = StyleSheet.create({
     color: "#273b4a",
   },
   pinContainer: {
-    alignItems: "center",
+    alignItems: "flex-start",
     marginBottom: 20,
   },
   pinInputContainer: {
@@ -195,6 +207,23 @@ const styles = StyleSheet.create({
     width: "80%",
     marginVertical: 10,
   },
+  pinCodeInput: {
+    height: 50,
+    borderColor: "#0d47a1",
+    borderWidth: 1.5,
+    borderRadius: 10,
+    paddingHorizontal: 15,
+    marginBottom: 15,
+    fontSize: 16,
+    backgroundColor: "#f9f9ff",
+    color: "#000",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 2, // Android shadow
+  },
+
   pinInput: {
     width: 40,
     height: 50,
@@ -214,6 +243,34 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginBottom: 10,
   },
+
+  // pinContainer: {
+  //   marginVertical: 12,
+  //   paddingHorizontal: 16,
+  // },
+
+  // label: {
+  //   fontSize: 16,
+  //   fontWeight: "600",
+  //   marginBottom: 8,
+  //   color: "#333",
+
+  // input: {
+  //   height: 50,
+  //   borderColor: "#ccc",
+  //   borderWidth: 1,
+  //   borderRadius: 10,
+  //   paddingHorizontal: 15,
+  //   fontSize: 16,
+  //   backgroundColor: "#f9f9f9",
+  //   color: "#000",
+  //   shadowColor: "#000",
+  //   shadowOffset: { width: 0, height: 1 },
+  //   shadowOpacity: 0.1,
+  //   shadowRadius: 3,
+  //   elevation: 2, // For Android shadow
+  // },
+
   picker: {
     height: 50,
     width: "100%",
