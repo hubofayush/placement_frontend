@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,11 +8,46 @@ import {
   Image,
   ScrollView,
 } from "react-native";
-import { Ionicons } from '@expo/vector-icons'; // Import Ionicons
+import { Ionicons } from "@expo/vector-icons";
+import axios from "axios";
 
 const Marketplace = ({ navigation }) => {
   const [activeSegment, setActiveSegment] = useState("Jobs");
   const [activeNavItem, setActiveNavItem] = useState("Home");
+  const [jobs, setJobs] = useState([]); // State for job data
+  const [loading, setLoading] = useState(true); // Loading state
+
+  // Fetch job data on component mount
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        const response = await axios.get(
+          "http://192.168.1.11:4000/api/v1/emp/"
+        );
+
+        // console.log("Marketplace data:", response.data);
+        if (response.data.statusCode === 200) {
+          setJobs(response.data.data); // Store the job array
+        } else {
+          console.error("Failed to fetch jobs:", response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching jobs:", error);
+        if (error.response) {
+          console.error("Error response:", error.response.data);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchJobs();
+  }, []);
+
+  const handleJobCardClick = (job) => {
+    console.log("Selected Job Details:", job._id);
+    navigation.navigate("JobDetails", { job }); // Pass the whole job object
+  };
 
   return (
     <View style={styles.container}>
@@ -21,16 +56,22 @@ const Marketplace = ({ navigation }) => {
         <Text style={styles.headerTitle}>Marketplace</Text>
         <View style={styles.segmentedControl}>
           <TouchableOpacity
-            style={[styles.segmentButton, activeSegment === "Jobs" && styles.activeSegment]}
+            style={[
+              styles.segmentButton,
+              activeSegment === "Jobs" && styles.activeSegment,
+            ]}
             onPress={() => setActiveSegment("Jobs")}
           >
             <Text style={styles.segmentText}>Jobs</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.segmentButton, activeSegment === "Companies" && styles.activeSegment]}
+            style={[
+              styles.segmentButton,
+              activeSegment === "Companies" && styles.activeSegment,
+            ]}
             onPress={() => {
               setActiveSegment("Companies");
-              navigation.navigate("CompanyDetails"); // Navigate to CompanyDetails
+              navigation.navigate("CompanyDetails");
             }}
           >
             <Text style={styles.segmentText}>Companies</Text>
@@ -46,59 +87,36 @@ const Marketplace = ({ navigation }) => {
 
       {/* Job Listings */}
       <ScrollView style={styles.jobList}>
-        <TouchableOpacity
-          style={styles.jobCard}
-          onPress={() => navigation.navigate("JobDetails")} // Navigate to JobDetails
-        >
-          <View style={[styles.logoContainer, { backgroundColor: "#26a689" }]}>
-            <Image
-              source={require("../assets/placeholder.png")}
-              style={styles.logo}
-            />
-          </View>
-          <View style={styles.jobInfo}>
-            <Text style={styles.jobTitle}>Welder</Text>
-            <Text style={styles.companyName}>Gadre Marine</Text>
-            <Text style={styles.location}>Ratnagiri</Text>
-          </View>
-          <Ionicons name="chevron-forward" style={styles.chevronIcon} />
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.jobCard}
-          onPress={() => navigation.navigate("JobDetails")} // Navigate to JobDetails
-        >
-          <View style={[styles.logoContainer, { backgroundColor: "#f9d5f2" }]}>
-            <Image
-              source={require("../assets/placeholder.png")}
-              style={styles.logo}
-            />
-          </View>
-          <View style={styles.jobInfo}>
-            <Text style={styles.jobTitle}>Mechanic</Text>
-            <Text style={styles.companyName}>PIS Pvt Ltd</Text>
-            <Text style={styles.location}>Ratnagiri</Text>
-          </View>
-          <Ionicons name="chevron-forward" style={styles.chevronIcon} />
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.jobCard}
-          onPress={() => navigation.navigate("JobDetails")} // Navigate to JobDetails
-        >
-          <View style={[styles.logoContainer, { backgroundColor: "#26a689" }]}>
-            <Image
-              source={require("../assets/placeholder.png")}
-              style={styles.logo}
-            />
-          </View>
-          <View style={styles.jobInfo}>
-            <Text style={styles.jobTitle}>Electrician</Text>
-            <Text style={styles.companyName}>Finolex Industry</Text>
-            <Text style={styles.location}>Ratnagiri</Text>
-          </View>
-          <Ionicons name="chevron-forward" style={styles.chevronIcon} />
-        </TouchableOpacity>
+        {loading ? (
+          <Text style={styles.loadingText}>Loading jobs...</Text>
+        ) : jobs.length > 0 ? (
+          jobs.map((job) => (
+            <TouchableOpacity
+              key={job._id} // Unique key for each job card
+              style={styles.jobCard}
+              onPress={() => handleJobCardClick(job)} // Use handler for click
+            >
+              <View
+                style={[styles.logoContainer, { backgroundColor: "#f9d5f2" }]}
+              >
+                <Image
+                  source={require("../assets/placeholder.png")}
+                  style={styles.logo}
+                />
+              </View>
+              <View style={styles.jobInfo}>
+                <Text style={styles.jobTitle}>{job.title}</Text>
+                <Text style={styles.companyName}>{job.companyName}</Text>
+                <Text style={styles.location}>
+                  {job.location} ({job.openings} openings)
+                </Text>
+              </View>
+              <Ionicons name="chevron-forward" style={styles.chevronIcon} />
+            </TouchableOpacity>
+          ))
+        ) : (
+          <Text style={styles.noJobsText}>No jobs available</Text>
+        )}
       </ScrollView>
 
       {/* Bottom Navigation */}
@@ -106,12 +124,16 @@ const Marketplace = ({ navigation }) => {
         <TouchableOpacity
           style={styles.navItem}
           onPress={() => {
-            setActiveNavItem("Marketplace");
+            setActiveNavItem("Home");
             navigation.navigate("Marketplace");
           }}
         >
-          <Ionicons name="home" size={24} color={activeNavItem === "Home" ? "#0d47a1" : "#595959"} />
-          <Text style={styles.navText}>Home </Text>
+          <Ionicons
+            name="home"
+            size={24}
+            color={activeNavItem === "Home" ? "#0d47a1" : "#595959"}
+          />
+          <Text style={styles.navText}>Home</Text>
           {activeNavItem === "Home" && <View style={styles.activeLine} />}
         </TouchableOpacity>
         <TouchableOpacity
@@ -121,9 +143,15 @@ const Marketplace = ({ navigation }) => {
             navigation.navigate("NotificationScreen");
           }}
         >
-          <Ionicons name="notifications" size={24} color={activeNavItem === "Notification" ? "#0d47a1" : "#595959"} />
-          <Text style={styles.navText}>Notification </Text>
-          {activeNavItem === "Notification" && <View style={styles.activeLine} />}
+          <Ionicons
+            name="notifications"
+            size={24}
+            color={activeNavItem === "Notification" ? "#0d47a1" : "#595959"}
+          />
+          <Text style={styles.navText}>Notification</Text>
+          {activeNavItem === "Notification" && (
+            <View style={styles.activeLine} />
+          )}
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.navItem}
@@ -132,8 +160,12 @@ const Marketplace = ({ navigation }) => {
             navigation.navigate("SearchScreen");
           }}
         >
-          <Ionicons name="search" size={24} color={activeNavItem === "Search" ? "#0d47a1" : "#595959"} />
-          <Text style={styles.navText}>Search </Text>
+          <Ionicons
+            name="search"
+            size={24}
+            color={activeNavItem === "Search" ? "#0d47a1" : "#595959"}
+          />
+          <Text style={styles.navText}>Search</Text>
           {activeNavItem === "Search" && <View style={styles.activeLine} />}
         </TouchableOpacity>
         <TouchableOpacity
@@ -143,8 +175,12 @@ const Marketplace = ({ navigation }) => {
             navigation.navigate("ProfileScreen");
           }}
         >
-          <Ionicons name="person" size={24} color={activeNavItem === "Profile" ? "#0d47a1" : "#595959"} />
-          <Text style={styles.navText}>Profile </Text>
+          <Ionicons
+            name="person"
+            size={24}
+            color={activeNavItem === "Profile" ? "#0d47a1" : "#595959"}
+          />
+          <Text style={styles.navText}>Profile</Text>
           {activeNavItem === "Profile" && <View style={styles.activeLine} />}
         </TouchableOpacity>
       </View>
@@ -244,6 +280,7 @@ const styles = StyleSheet.create({
   },
   chevronIcon: {
     color: "#898a8d",
+    fontSize: 24,
   },
   bottomNav: {
     flexDirection: "row",
@@ -264,6 +301,18 @@ const styles = StyleSheet.create({
     height: 4,
     backgroundColor: "#1565c0",
     marginTop: 5,
+  },
+  loadingText: {
+    textAlign: "center",
+    fontSize: 16,
+    color: "#595959",
+    marginTop: 20,
+  },
+  noJobsText: {
+    textAlign: "center",
+    fontSize: 16,
+    color: "#595959",
+    marginTop: 20,
   },
 });
 

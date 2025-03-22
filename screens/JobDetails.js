@@ -1,135 +1,102 @@
-import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  Image,
-  StatusBar,
-} from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+//
 
-const JobDetails = ({ navigation }) => {
-  const [mobileNumber, setMobileNumber] = useState("");
-  const [activeNavItem, setActiveNavItem] = useState("JobDetails"); // Set initial active item
+import React, { useState, useEffect } from "react";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
+import axios from "axios";
+import * as SecureStore from "expo-secure-store";
+import { Button } from "react-native-paper";
 
+const JobDetails = ({ navigation, route }) => {
+  const { job } = route.params; // Initial job data from Marketplace
+  const [jobDetails, setJobDetails] = useState(null); // State for fetched job data
+  const [loading, setLoading] = useState(true); // Loading state for API call
+
+  // Fetch additional job details using job._id
+  useEffect(() => {
+    const fetchJobDetails = async () => {
+      const accessToken = await SecureStore.getItemAsync("AccessToken");
+      try {
+        const response = await axios.get(
+          `http://192.168.1.11:4000/api/v1/emp/job/${job._id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+        console.log("Fetched Job Details Response:", response.data); // Log the API response
+        setJobDetails(response.data); // Store the fetched data
+      } catch (error) {
+        console.error("Error fetching job details:", error);
+        if (error.response) {
+          console.error("Error response:", error.response.data);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchJobDetails();
+  }, [job._id]); // Dependency on job._id to refetch if it changes
+
+  const apply = async () => {
+    navigation.navigate("ApplyWithResumeFrame", { job });
+  };
   return (
-    <View style={styles.container}>
-      {/* Status Bar */}
-      <StatusBar barStyle="dark-content" backgroundColor="#e4f6ff" />
-      
-      {/* Header */}
+    <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={24} color="black" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Job Details</Text>
+        <Text style={styles.jobTitle}>{job.title}</Text>
+        <Text style={styles.companyName}>{job.companyName}</Text>
       </View>
 
-      {/* Main Content */}
-      <View style={styles.content}>
-        <View style={styles.jobInfo}>
-          <View style={styles.logoContainer}>
-            <Text style={styles.logoText}>F</Text>
-          </View>
-          <View style={styles.jobDetails}>
-            <Text style={styles.jobTitle}>Electrician</Text>
-            <Text style={styles.companyName}>Finolex AMT</Text>
-          </View>
-        </View>
-        <View style={styles.jobTags}>
-          <Text style={styles.tag}>Fulltime</Text>
-          <Text style={styles.tag}>Hourly</Text>
-        </View>
-        <TouchableOpacity style={styles.contactButton}>
-          <Ionicons name="call" size={24} color="#40189d" />
-          <Text style={styles.contactText}>Contact us</Text>
-        </TouchableOpacity>
+      <View style={styles.detailsContainer}>
+        {loading ? (
+          <Text style={styles.loadingText}>Loading additional details...</Text>
+        ) : jobDetails ? (
+          <>
+            {/* Display initial job data or update with fetched data */}
+            <Text style={styles.label}>Title:</Text>
+            <Text style={styles.value}>{job.title}</Text>
+            <Text style={styles.label}>Location:</Text>
+            <Text style={styles.value}>{job.location}</Text>
+            <Text style={styles.label}>Salary Range:</Text>
+            <Text style={styles.value}>{job.salaryRange}</Text>
+            <Text style={styles.label}>Qualiication:</Text>
+            <Text style={styles.value}>{job.qualification}</Text>
 
-        {/* Salary Section */}
-        <View style={styles.salarySection}>
-          <Ionicons name="cash" size={24} color="#40189d" />
-          <View>
-            <Text style={styles.salaryTitle}>Salary</Text>
-            <Text style={styles.salaryAmount}>Rs. 13,000 - 17,000/monthly</Text>
-          </View>
-        </View>
+            <Text style={styles.label}>Openings:</Text>
+            <Text style={styles.value}>{job.openings}</Text>
+            <Text style={styles.label}>Instructions:</Text>
+            <Text style={styles.value}>{job.instructions}</Text>
+            <Text style={styles.label}>Job Type:</Text>
+            <Text style={styles.value}>{job.jobType}</Text>
+            <Text style={styles.label}>close Date:</Text>
+            <Text style={styles.value}>{job.closeDate}</Text>
+            <Text style={styles.label}>Contact:</Text>
+            <Text style={styles.value}>{job.contactInfo}</Text>
 
-        {/* Location Section */}
-        <View style={styles.locationSection}>
-          <Ionicons name="location-outline" size={24} color="#40189d" />
-          <View>
-            <Text style={styles.locationTitle}>Location</Text>
-            <Text style={styles.location}>Ratnagiri</Text>
-          </View>
-        </View>
+            {/* Example: Display fetched data if it differs */}
+            {jobDetails.data && (
+              <>
+                <Text style={styles.label}>Description:</Text>
+                <Text style={styles.value}>
+                  {jobDetails.data.description || job.description}
+                </Text>
 
-        {/* Job Description */}
-        <View style={styles.descriptionSection}>
-          <Text style={styles.descriptionTitle}>Job Description</Text>
-          <Text style={styles.descriptionText}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-          </Text>
-        </View>
+                <Text style={styles.label}>Salary Range:</Text>
+                <Text style={styles.value}>
+                  {jobDetails.data.salaryRange || job.salaryRange}
+                </Text>
 
-        {/* Apply Now Button */}
-        <TouchableOpacity
-          style={styles.getStartedButton}
-          onPress={() => navigation.navigate("ApplyOver")}
-        >
-          <Text style={styles.getStartedText}>APPLY NOW</Text>
-        </TouchableOpacity>
+                <Button onPress={apply}>Apply Now</Button>
+              </>
+            )}
+          </>
+        ) : (
+          <Text style={styles.errorText}>Failed to load job details</Text>
+        )}
       </View>
-
-      {/* Bottom Navigation Component */}
-      <View style={styles.bottomNav}>
-        <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => {
-            setActiveNavItem("Home");
-            navigation.navigate("Home");
-          }}
-        >
-          <Ionicons name="home" size={24} color={activeNavItem === "Home" ? "#0d47a1" : "#595959"} />
-          <Text style={styles.navText}>Home</Text>
-          {activeNavItem === "Home" && <View style={styles.activeLine} />}
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => {
-            setActiveNavItem("Notifications");
-            navigation.navigate("Notifications");
-          }}
-        >
-          <Ionicons name="notifications" size={24} color={activeNavItem === "Notifications" ? "#0d47a1" : "#595959"} />
-          <Text style={styles.navText}>Notification</Text>
-          {activeNavItem === "Notifications" && <View style={styles.activeLine} />}
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => {
-            setActiveNavItem("Search");
-            navigation.navigate("Search");
-          }}
-        >
-          <Ionicons name="search" size={24} color={activeNavItem === "Search" ? "#0d47a1" : "#595959"} />
-          <Text style={styles.navText}>Search</Text>
-          {activeNavItem === "Search" && <View style={styles.activeLine} />}
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => {
-            setActiveNavItem("Profile");
-            navigation.navigate("Profile");
-          }}
-        >
-          <Ionicons name="person" size={24} color={activeNavItem === "Profile" ? "#0d47a1" : "#595959"} />
-          <Text style={styles.navText}>Profile</Text>
-          {activeNavItem === "Profile" && <View style={styles.activeLine} />}
-        </TouchableOpacity>
-      </View>
-    </View>
+    </ScrollView>
   );
 };
 
@@ -137,143 +104,49 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#e4f6ff",
+    padding: 20,
   },
   header: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 16,
-    backgroundColor: "#fff",
-    elevation: 2,
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginLeft: 16,
-  },
-  content: {
-    flex: 1, // Allow content to take up remaining space
-    padding: 16,
-  },
-  jobInfo: {
-    marginBottom: 16,
-  },
-  logoContainer: {
-    backgroundColor: "#26a689",
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    justifyContent: "center",
-    alignItems: "center",
-    position: "absolute",
-    top: -15,
-    left: 16,
-  },
-  logoText: {
-    color: "white",
-    fontSize: 36,
-    fontWeight: "bold",
-  },
-  jobDetails: {
-    marginLeft: 100, // Add margin to avoid overlap
+    marginBottom: 20,
   },
   jobTitle: {
-    fontSize: 32,
+    fontSize: 28,
     fontWeight: "bold",
+    color: "#0d47a1",
   },
   companyName: {
     fontSize: 20,
-    color: "#595959",
+    color: "#33363f",
   },
-  jobTags: {
-    flexDirection: "row",
-    marginBottom: 16,
-  },
-  tag: {
-    borderWidth: 1,
-    borderColor: "#40189d",
-    borderRadius: 20,
-    padding: 8,
-    marginRight: 8,
-    color: "#40189d",
-  },
-  contactButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  contactText: {
-    marginLeft: 8,
-    fontSize: 18,
-    color: "#595959",
-  },
-  salarySection: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  salaryTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  salaryAmount: {
-    color: "#595959",
-  },
-  locationSection: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  locationTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  location: {
-    color: "#595959",
-  },
-  descriptionSection: {
-    marginBottom: 16,
-  },
-  descriptionTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 8,
-  },
-  descriptionText: {
-    color: "#595959",
-    lineHeight: 24,
-  },
-  getStartedButton: {
-    backgroundColor: "#0d47a1",
-    borderRadius: 25,
-    paddingVertical: 15,
-    paddingHorizontal: 40,
-    alignItems: "center",
-    marginVertical: 20, // Add margin for spacing
-  },
-  getStartedText: {
-    color: "#ffffff",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  bottomNav: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    padding: 10,
+  detailsContainer: {
     backgroundColor: "#fff",
-    borderTopWidth: 1,
-    borderTopColor: "#ddd",
+    borderRadius: 15,
+    padding: 20,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
   },
-  navItem: {
-    alignItems: "center",
-  },
-  navText: {
+  label: {
+    fontSize: 16,
+    fontWeight: "bold",
     color: "#595959",
+    marginTop: 10,
   },
-  activeLine: {
-    width: "100%",
-    height: 4,
-    backgroundColor: "#1565c0",
-    marginTop: 5,
+  value: {
+    fontSize: 16,
+    color: "#333",
+    marginBottom: 10,
+  },
+  loadingText: {
+    fontSize: 16,
+    color: "#595959",
+    textAlign: "center",
+  },
+  errorText: {
+    fontSize: 16,
+    color: "red",
+    textAlign: "center",
   },
 });
 

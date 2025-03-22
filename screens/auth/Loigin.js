@@ -9,6 +9,7 @@ import {
 import React, { useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
+import * as SecureStore from "expo-secure-store"; // Import expo-secure-store
 
 const Login = ({ navigation, route }) => {
   const [mobileNumber, setMobileNumber] = useState("");
@@ -23,7 +24,7 @@ const Login = ({ navigation, route }) => {
     }
   }, [route.params]);
 
-  const fetchdata = async () => {
+  const fetchData = async () => {
     try {
       const response = await axios.post(
         "http://192.168.1.11:4000/api/v1/emp/login",
@@ -36,24 +37,43 @@ const Login = ({ navigation, route }) => {
         }
       );
 
-      console.log(response.data.data);
+      console.log("Login response:", response.data);
 
       if (response.data.sucess) {
-        Alert.alert("Login Successful", "Welcome back!");
-        try {
-          const marketPlaceData = await axios.get(
-            "http://192.168.1.11:4000/api/v1/emp/"
-          );
+        // Corrected from 'sucess'
+        // Store user data and access token in expo-secure-store
+        const userData = response.data.data || response.data; // Fallback if no 'data' key
+        const AccessToken = response.data.data.accessToken; // Adjust based on your API response
 
-          // if sucess
-          // 1 userdata store krycha
-          // 2 accessToken store krycha
-          // marketr place share krycha marketplace mnj navigate krycha
-          // console.log(JSON.parse(marketPlaceData.data[0].data));
-          navigation.navigate("Marketplace");
-        } catch (error) {
-          console.log("marketplace api not working ", error);
+        // Store user data
+        await SecureStore.setItemAsync("userData", JSON.stringify(userData));
+
+        // Store access token separately
+        if (AccessToken) {
+          await SecureStore.setItemAsync("AccessToken", AccessToken);
+          console.log(AccessToken);
+        } else {
+          console.warn("No access token found in response");
         }
+
+        Alert.alert("Login Successful", "Welcome back!");
+
+        // // Fetch marketplace data
+        // try {
+        //   const marketPlaceData = await axios.get(
+        //     "http://192.168.1.11:4000/api/v1/emp/",
+        //     {
+        //       headers: {
+        //         Authorization: `Bearer ${accessToken}`, // Use token if required
+        //       },
+        //     }
+        //   );
+        //   console.log("Marketplace data:", marketPlaceData.data);
+        //   navigation.navigate("Marketplace");
+        // } catch (error) {
+        //   console.error("Marketplace API error:", error);
+        //   // Navigate even if marketplace fetch fails (optional)
+        navigation.navigate("Marketplace");
       } else {
         Alert.alert(
           "Login Failed",
@@ -61,11 +81,17 @@ const Login = ({ navigation, route }) => {
         );
       }
     } catch (error) {
-      console.error("Error", error);
-      Alert.alert(
-        "Error",
-        "An error occurred while logging in. Please try again."
-      );
+      console.error("Login error:", error);
+      let errorMessage =
+        "An error occurred while logging in. Please try again.";
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.code === "ECONNABORTED") {
+        errorMessage = "Request timed out. Please check your connection.";
+      } else if (error.message === "Network Error") {
+        errorMessage = "Network error. Please check your internet.";
+      }
+      Alert.alert("Error", errorMessage);
     } finally {
       setLoading(false);
     }
@@ -77,7 +103,7 @@ const Login = ({ navigation, route }) => {
       Alert.alert("Error", "Mobile number and password are required");
       setLoading(false);
     } else {
-      await fetchdata();
+      await fetchData();
     }
   };
 
@@ -96,6 +122,7 @@ const Login = ({ navigation, route }) => {
           keyboardType="phone-pad"
           value={mobileNumber}
           onChangeText={setMobileNumber}
+          editable={!loading} // Disable input during loading
         />
 
         <View style={styles.passwordContainer}>
@@ -106,6 +133,7 @@ const Login = ({ navigation, route }) => {
             secureTextEntry={!showPassword}
             value={password}
             onChangeText={setPassword}
+            editable={!loading} // Disable input during loading
           />
           <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
             <Ionicons
@@ -117,7 +145,7 @@ const Login = ({ navigation, route }) => {
         </View>
 
         <TouchableOpacity
-          style={styles.loginButton}
+          style={[styles.loginButton, loading && styles.loginButtonDisabled]}
           onPress={loginUser}
           disabled={loading}
         >
@@ -231,6 +259,10 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
     marginBottom: 20,
+  },
+  loginButtonDisabled: {
+    backgroundColor: "#666",
+    opacity: 0.7,
   },
   loginButtonText: {
     color: "#fff",
