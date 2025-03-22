@@ -26,7 +26,7 @@ const Login = ({ navigation, route }) => {
   const fetchdata = async () => {
     try {
       const response = await axios.post(
-        "https://vayun-backend.onrender.com/api/v1/emp/login",
+        "http://192.168.1.11:4000/api/v1/emp/login",
         {
           phone: mobileNumber,
           password: password,
@@ -40,7 +40,20 @@ const Login = ({ navigation, route }) => {
 
       if (response.data.sucess) {
         Alert.alert("Login Successful", "Welcome back!");
-        navigation.navigate("Marketplace");
+        try {
+          const marketPlaceData = await axios.get(
+            "http://192.168.1.11:4000/api/v1/emp/"
+          );
+
+          // if sucess
+          // 1 userdata store krycha
+          // 2 accessToken store krycha
+          // marketr place share krycha marketplace mnj navigate krycha
+          // console.log(JSON.parse(marketPlaceData.data[0].data));
+          navigation.navigate("Marketplace");
+        } catch (error) {
+          console.log("marketplace api not working ", error);
+        }
       } else {
         Alert.alert(
           "Login Failed",
