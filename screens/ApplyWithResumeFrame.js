@@ -9,22 +9,46 @@ import {
   Modal,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import * as DocumentPicker from 'expo-document-picker';
+import * as DocumentPicker from "expo-document-picker";
 
 const ApplyWithResumeFrame = ({ navigation }) => {
   const [resumeFile, setResumeFile] = useState(null);
   const [coverLetter, setCoverLetter] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
 
-  const handleResumeUpload = async () => {
-    const result = await DocumentPicker.getDocumentAsync({
-      type: "application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    });
+  // const handleResumeUpload = async () => {
+  //   const result = await DocumentPicker.getDocumentAsync({
+  //     type: "application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  //   });
 
-    if (result.type === "success") {
-      setResumeFile(result);
-    } else {
-      Alert.alert("Error", "Failed to upload resume.");
+  //   if (result.type === "success") {
+  //     setResumeFile(result);
+  //   } else {
+  //     Alert.alert("Error", "Failed to upload resume.");
+  //   }
+  // };
+
+  const handleResumeUpload = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: [
+          "application/pdf",
+          "application/msword",
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        ],
+      });
+
+      console.log("Picked file result:", result);
+
+      if (result.assets && result.assets.length > 0) {
+        const file = result.assets[0];
+        setResumeFile(file);
+      } else {
+        Alert.alert("Error", "No file selected.");
+      }
+    } catch (error) {
+      console.error("DocumentPicker Error:", error);
+      Alert.alert("Error", "An error occurred while picking the file.");
     }
   };
 
@@ -86,9 +110,12 @@ const ApplyWithResumeFrame = ({ navigation }) => {
             <View style={styles.successIconContainer}>
               <Ionicons name="checkmark-circle" size={64} color="#0D47A1" />
             </View>
-            <Text style={styles.modalTitle}>Your application has been submitted!</Text>
+            <Text style={styles.modalTitle}>
+              Your application has been submitted!
+            </Text>
             <Text style={styles.modalMessage}>
-              Your application has been submitted, and we will review it as soon as possible.
+              Your application has been submitted, and we will review it as soon
+              as possible.
             </Text>
           </View>
         </View>
