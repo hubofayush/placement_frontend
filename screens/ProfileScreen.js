@@ -16,6 +16,41 @@ const ProfileScreen = ({ navigation }) => {
   const [isMenuVisible, setMenuVisible] = useState(false);
   const [userData, setUserData] = useState(null);
   const [accessToken, setAccessToken] = useState(null);
+  const [jobCount, setJobCount] = useState(0);
+
+  useEffect(() => {
+    const fetchJobApplications = async () => {
+      try {
+        const token = await SecureStore.getItemAsync("AccessToken");
+        if (!token) {
+          console.warn("Access token not found!");
+          return;
+        }
+
+        const response = await fetch(
+          "http://192.168.250.1:4000/api/v1/emp/job/myapplicatons",
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        const result = await response.json();
+        if (result.statusCode === 200 && Array.isArray(result.data)) {
+          setJobCount(result.data.length);
+        } else {
+          console.warn("Failed to fetch job applications");
+        }
+      } catch (error) {
+        console.error("Error fetching job applications:", error);
+      }
+    };
+
+    fetchJobApplications();
+  }, []);
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -125,14 +160,15 @@ const ProfileScreen = ({ navigation }) => {
           onPress={() => navigation.navigate("AppliedJobs")}
         >
           <View style={styles.jobsAppliedContent}>
-            <Text style={styles.jobsCount}>2</Text>
+            <Text style={styles.jobsCount}>{jobCount}</Text>
+            <View style={{ height: 8 }} /> {/* Spacer */}
             <View style={styles.starsContainer}>
-              {[...Array(2)].map((_, i) => (
+              {[...Array(jobCount)].map((_, i) => (
                 <Ionicons key={i} name="star" size={16} color="#fff" />
               ))}
             </View>
           </View>
-          <Text style={styles.jobsAppliedText}>Jobs Applied </Text>
+          <Text style={styles.jobsAppliedText}>Jobs Applied</Text>
         </TouchableOpacity>
 
         {/* Illustration Placeholder */}
