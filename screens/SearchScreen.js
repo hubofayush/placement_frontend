@@ -6,111 +6,129 @@ import {
   TouchableOpacity,
   StyleSheet,
   FlatList,
+  Image,
 } from "react-native";
-import { Ionicons } from '@expo/vector-icons'; // Import Ionicons
+import { Ionicons } from "@expo/vector-icons";
+import axios from "axios";
 
 const SearchScreen = ({ navigation }) => {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [results, setResults] = useState([]); // Sample results array
-  const [activeNavItem, setActiveNavItem] = useState("Search");
-  // Sample data for demonstration
-  const sampleData = [
-    { id: '1', title: 'Software Engineer', company: 'Tech Corp' },
-    { id: '2', title: 'Product Manager', company: 'Business Inc.' },
-    { id: '3', title: 'Graphic Designer', company: 'Creative Studio' },
-  ];
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [companyInfo, setCompanyInfo] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const handleSearch = () => {
-    // Implement search logic here
-    const filteredResults = sampleData.filter(item =>
-      item.title.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    setResults(filteredResults);
+  const handleSearch = async () => {
+    setLoading(true);
+    setCompanyInfo(null); // Reset company info
+    try {
+      const response = await axios.get("http://192.168.250.1:4000/api/v1/emp/");
+      if (response.data.statusCode === 200) {
+        const jobs = response.data.data;
+        const filteredJobs = jobs.filter(
+          (job) =>
+            job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            job.companyName.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+
+        if (filteredJobs.length > 0) {
+          // Derive company info from the first matched job
+          const firstCompany = filteredJobs[0].companyName;
+          const jobsFromSameCompany = jobs.filter(
+            (job) =>
+              job.companyName.toLowerCase() === firstCompany.toLowerCase()
+          );
+          const uniqueLocations = [
+            ...new Set(jobsFromSameCompany.map((job) => job.location)),
+          ];
+          setCompanyInfo({
+            name: firstCompany,
+            location: uniqueLocations.join(", "),
+            numberOfActive: jobsFromSameCompany.length,
+          });
+        }
+
+        setSearchResults(filteredJobs);
+      } else {
+        setSearchResults([]);
+        setCompanyInfo(null);
+      }
+    } catch (error) {
+      console.error("Search error:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const renderResultItem = ({ item }) => (
-    <TouchableOpacity
-      style={styles.resultCard}
-      onPress={() => navigation.navigate("JobDetails", { jobId: item.id })}
-    >
-      <Text style={styles.resultTitle}>{item.title}</Text>
-      <Text style={styles.resultCompany}>{item.company}</Text>
-    </TouchableOpacity>
-  );
+  const handleJobCardClick = (job) => {
+    console.log("Navigating to Job ID:", job._id);
+    navigation.navigate("JobDetails", { job });
+  };
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Search Jobs</Text>
-        <View style={styles.searchContainer}>
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search for jobs..."
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            onSubmitEditing={handleSearch}
+      <Text style={styles.header}>Search Jobs</Text>
+      <View style={styles.searchBar}>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter job title or company..."
+          value={searchTerm}
+          onChangeText={setSearchTerm}
+        />
+        <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
+          <Ionicons name="search" size={24} color="#fff" />
+        </TouchableOpacity>
+      </View>
+
+      {loading ? (
+        <Text style={styles.loadingText}>Searching...</Text>
+      ) : (
+        <>
+          {companyInfo && (
+            <View style={styles.companyCard}>
+              <Text style={styles.companyHeader}>{companyInfo.name}</Text>
+              <Text style={styles.companyDetail}>
+                Location: {companyInfo.location}
+              </Text>
+              <Text style={styles.companyDetail}>
+                Active Job Openings: {companyInfo.numberOfActive}
+              </Text>
+            </View>
+          )}
+
+          {searchResults.length > 0 && (
+            <Text style={styles.jobApplicationHeading}>Job Application</Text>
+          )}
+
+          <FlatList
+            data={searchResults}
+            keyExtractor={(item) => item._id}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={styles.jobCard}
+                onPress={() => handleJobCardClick(item)}
+              >
+                <View style={styles.logoContainer}>
+                  <Image
+                    source={require("../assets/placeholder.png")}
+                    style={styles.logo}
+                  />
+                </View>
+                <View style={styles.jobInfo}>
+                  <Text style={styles.jobTitle}>{item.title}</Text>
+                  <Text style={styles.companyName}>{item.companyName}</Text>
+                  <Text style={styles.location}>
+                    {item.location} ({item.openings} openings)
+                  </Text>
+                </View>
+                <Ionicons name="chevron-forward" style={styles.chevronIcon} />
+              </TouchableOpacity>
+            )}
+            ListEmptyComponent={
+              <Text style={styles.noResultsText}>No matching jobs found</Text>
+            }
           />
-          <TouchableOpacity onPress={handleSearch}>
-            <Ionicons name="search" size={24} color="#1565c0" />
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      <FlatList
-        data={results}
-        renderItem={renderResultItem}
-        keyExtractor={item => item.id}
-        contentContainerStyle={styles.resultsList}
-        showsVerticalScrollIndicator={false}
-      />
-
-      {/* Bottom Navigation Bar */}
-      <View style={styles.bottomNav}>
-        <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => {
-            setActiveNavItem("Home");
-            navigation.navigate("Marketplace");
-          }}
-        >
-          <Ionicons name="home" size={24} color={activeNavItem === "Home" ? "#0d47a1" : "#595959"} />
-          <Text style={styles.navText}>Home </Text>
-          {activeNavItem === "Home" && <View style={styles.activeLine} />}
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => {
-            setActiveNavItem("Notification");
-            navigation.navigate("NotificationScreen");
-          }}
-        >
-          <Ionicons name="notifications" size={24} color={activeNavItem === "Notification" ? "#0d47a1" : "#595959"} />
-          <Text style={styles.navText}>Notification </Text>
-          {activeNavItem === "Notification" && <View style={styles.activeLine} />}
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => {
-            setActiveNavItem("Search");
-            navigation.navigate("SearchScreen");
-          }}
-        >
-          <Ionicons name="search" size={24} color={activeNavItem === "Search" ? "#0d47a1" : "#595959"} />
-          <Text style={styles.navText}>Search </Text>
-          {activeNavItem === "Search" && <View style={styles.activeLine} />}
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => {
-            setActiveNavItem("Profile");
-            navigation.navigate("ProfileScreen");
-          }}
-        >
-          <Ionicons name="person" size={24} color={activeNavItem === "Profile" ? "#0d47a1" : "#595959"} />
-          <Text style={styles.navText}>Profile </Text>
-          {activeNavItem === "Profile" && <View style={styles.activeLine} />}
-        </TouchableOpacity>
-      </View>
+        </>
+      )}
     </View>
   );
 };
@@ -122,33 +140,66 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   header: {
-    marginBottom: 20,
-  },
-  headerTitle: {
-    fontSize: 30,
+    fontSize: 26,
     fontWeight: "bold",
     color: "#0d47a1",
     marginBottom: 10,
   },
-  searchContainer: {
+  searchBar: {
+    flexDirection: "row",
+    marginBottom: 20,
+  },
+  input: {
+    flex: 1,
+    backgroundColor: "#fff",
+    padding: 12,
+    borderRadius: 10,
+    borderColor: "#ccc",
+    borderWidth: 1,
+  },
+  searchButton: {
+    backgroundColor: "#0d47a1",
+    padding: 12,
+    borderRadius: 10,
+    marginLeft: 10,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    textAlign: "center",
+    fontSize: 16,
+    color: "#595959",
+  },
+  companyCard: {
+    backgroundColor: "#fff", // same as jobCard
+    padding: 15,
+    borderRadius: 15, // matching jobCard's rounded corners
+    marginBottom: 15,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 2,
+  },
+  companyHeader: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#000", // changed from #e65100 to black
+    marginBottom: 5,
+  },
+
+  companyDetail: {
+    fontSize: 14,
+    color: "#5d4037",
+  },
+  jobApplicationHeading: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#0d47a1",
+    marginBottom: 10,
+  },
+  jobCard: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#fff",
-    borderRadius: 25,
-    elevation: 5,
-    paddingHorizontal: 10,
-  },
-  searchInput: {
-    flex: 1,
-    height: 40,
-    fontSize: 16,
-    paddingHorizontal: 10,
-    borderRadius: 25,
-  },
-  resultsList: {
-    paddingBottom: 20,
-  },
-  resultCard: {
     backgroundColor: "#fff",
     borderRadius: 15,
     padding: 15,
@@ -156,39 +207,45 @@ const styles = StyleSheet.create({
     shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 5,
-    elevation: 3,
+    elevation: 2,
   },
-  resultTitle: {
-    fontSize: 18,
+  logoContainer: {
+    width: 50,
+    height: 50,
+    borderRadius: 10,
+    backgroundColor: "#f9d5f2",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 15,
+  },
+  logo: {
+    width: 30,
+    height: 30,
+    borderRadius: 10,
+  },
+  jobInfo: {
+    flex: 1,
+  },
+  jobTitle: {
+    fontSize: 16,
     fontWeight: "bold",
     color: "#000",
   },
-  resultCompany: {
+  companyName: {
     color: "#33363f",
   },
-  bottomNav: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    flexDirection: "row",
-    justifyContent: "space-around",
-    padding: 10,
-    backgroundColor: "#fff",
-    borderTopWidth: 1,
-    borderTopColor: "#ddd",
+  location: {
+    color: "#7f7979",
   },
-  navItem: {
-    alignItems: "center",
+  chevronIcon: {
+    color: "#898a8d",
+    fontSize: 20,
   },
-  navText: {
+  noResultsText: {
+    textAlign: "center",
+    fontSize: 16,
     color: "#595959",
-  },
-  activeLine: {
-    width: "100%",
-    height: 4,
-    backgroundColor: "#1565c0",
-    marginTop: 5,
+    marginTop: 20,
   },
 });
 

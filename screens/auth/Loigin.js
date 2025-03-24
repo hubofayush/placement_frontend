@@ -27,7 +27,7 @@ const Login = ({ navigation, route }) => {
   const fetchData = async () => {
     try {
       const response = await axios.post(
-        "http://192.168.1.11:4000/api/v1/emp/login",
+        "http://192.168.250.1:4000/api/v1/emp/login",
         {
           phone: mobileNumber,
           password: password,
